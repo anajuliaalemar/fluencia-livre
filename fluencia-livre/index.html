@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fluência Livre — Trilhas e Teste de Proficiência</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            rosebrand: {
+              50: '#FDF2F8',
+              100: '#FCE7F3',
+              200: '#FBCFE8',
+              300: '#F9A8D4',
+              400: '#F472B6',
+              500: '#EC4899',
+              600: '#DB2777',
+              700: '#BE185D',
+            },
+            darksurface: {
+              950: '#0F1117',
+              900: '#161922',
+              800: '#1E2230',
+              700: '#2A3042',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .reading-comfortable {
+      font-size: 1.0625rem;
+      line-height: 1.85;
+      letter-spacing: 0.01em;
+    }
+
+    /* Barra de rolagem sutil para o painel do tutor IA */
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #fbcfe8;
+      border-radius: 9999px;
+    }
+    .dark .custom-scroll::-webkit-scrollbar-thumb {
+      background: #831843;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #f472b6;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-white text-slate-900 antialiased selection:bg-rosebrand-100 selection:text-rosebrand-700 dark:bg-darksurface-950 dark:text-slate-100 dark:selection:bg-rosebrand-700/40 dark:selection:text-rosebrand-200">
+  <!-- Barra superior fixa com abas das trilhas, teste, conta, configurações e modo escuro -->
+  <header class="sticky top-0 z-30 border-b border-rosebrand-200/80 bg-white/95 backdrop-blur-sm dark:border-rosebrand-400/20 dark:bg-darksurface-950/95">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <div class="flex items-center gap-2.5">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-rosebrand-50 text-rosebrand-600 ring-1 ring-rosebrand-200 dark:bg-rosebrand-500/15 dark:text-rosebrand-300 dark:ring-rosebrand-400/30">
+          <!-- Ícone geométrico simples de livro/trilha -->
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+            <path d="M8 7h6" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-base font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-lg">Fluência Livre</span>
+            <span class="rounded-full border border-rosebrand-200 bg-rosebrand-50 px-2.5 py-0.5 text-xs font-semibold text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-rosebrand-500/15 dark:text-rosebrand-200">
+              Gratuito para sempre
+            </span>
+          </div>
+          <p class="hidden text-xs text-slate-500 dark:text-slate-400 sm:block" id="sessionStatusBadge">
+            Modo visitante • Progresso salvo localmente
+          </p>
+        </div>
+      </div>
+
+      <!-- Controles do canto superior direito: Tema Claro/Escuro, Configurações e Entrar/Conta -->
+<div class="flex flex-wrap items-center gap-2">
+  <button
+    type="button"
+    id="themeToggleBtn"
+    aria-pressed="false"
+    class="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl border border-rosebrand-200 bg-rosebrand-50/60 px-3 py-1.5 text-xs font-semibold text-rosebrand-700 transition hover:bg-rosebrand-100 focus:outline-none focus:ring-2 focus:ring-rosebrand-300 dark:border-rosebrand-400/30 dark:bg-darksurface-800 dark:text-rosebrand-200 dark:hover:bg-darksurface-700 sm:text-sm"
+  >
+    <span id="themeIcon" aria-hidden="true" class="inline-flex items-center">
+      <svg class="h-4 w-4 text-rosebrand-500 dark:text-rosebrand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </span>
+    <span id="themeLabel">Modo escuro</span>
+  </button>
+
+  <button
+    type="button"
+    id="openSettingsBtn"
+    class="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-rosebrand-200 hover:bg-rosebrand-50/60 hover:text-rosebrand-700 focus:outline-none focus:ring-2 focus:ring-rosebrand-300 dark:border-darksurface-700 dark:bg-darksurface-900 dark:text-slate-200 dark:hover:border-rosebrand-400/40 dark:hover:bg-darksurface-800 sm:text-sm"
+  >
+    <span aria-hidden="true" class="inline-flex items-center">
+      <svg class="h-4 w-4 text-rosebrand-500 dark:text-rosebrand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </span>
+    <span>Configurações</span>
+  </button>
+
+  <button
+    type="button"
+    data-view="login"
+    id="navLoginBtn"
+    class="nav-pill inline-flex min-h-[40px] items-center rounded-xl border px-3.5 py-1.5 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-rosebrand-300 sm:text-sm"
+  >
+    Entrar / Conta
+  </button>
+</div>
+
+    <!-- Barra secundária com abas das trilhas de aprendizado e teste -->
+    <div class="border-t border-rosebrand-100/90 bg-rosebrand-50/40 dark:border-darksurface-800 dark:bg-darksurface-900/90">
+      <nav aria-label="Abas das trilhas e avaliação" class="mx-auto flex max-w-7xl items-center gap-1.5 overflow-x-auto px-4 py-2 sm:px-6">
+        <button type="button" data-view="home" id="navHomeBtn" class="nav-pill shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-rosebrand-300 sm:text-sm">
+          Trilhas (Visão Geral)
+        </button>
+        <button type="button" data-view="listening" id="navListeningBtn" class="nav-pill shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-rosebrand-300 sm:text-sm">
+          Listening
+        </button>
+        <button type="button" data-view="speaking" id="navSpeakingBtn" class="nav-pill shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-rosebrand-300 sm:text-sm">
+          Speaking
+        </button>
+        <button type="button" data-view="reading" id="navReadingBtn" class="nav-pill shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-rosebrand-300 sm:text-sm">
+          Reading
+        </button>
+        <button type="button" data-view="writing" id="navWritingBtn" class="nav-pill shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-rosebrand-300 sm:text-sm">
+          Writing
+        </button>
+        <button type="button" data-view="assessment" id="navAssessmentBtn" class="nav-pill shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-rosebrand-300 sm:text-sm">
+          Teste de Proficiência
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Banner de feedback não-bloqueante -->
+  <div id="toastBanner" class="pointer-events-none fixed inset-x-0 top-24 z-50 flex justify-center px-4 opacity-0 transition-opacity duration-200">
+    <div id="toastContent" class="max-w-md rounded-xl border border-rosebrand-200 bg-rosebrand-50 px-4 py-2.5 text-sm font-medium text-rosebrand-700 shadow-sm dark:border-rosebrand-400/30 dark:bg-darksurface-800 dark:text-rosebrand-200">
+    </div>
+  </div>
+
+  <!-- Modal de Configurações do Aluno -->
+  <div id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/50 p-4 backdrop-blur-2xs">
+    <div class="w-full max-w-lg rounded-2xl border border-rosebrand-200 bg-white p-6 shadow-xl dark:border-rosebrand-400/25 dark:bg-darksurface-900">
+      <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-3.5 dark:border-darksurface-800">
+        <div>
+          <h2 id="settingsModalTitle" class="text-lg font-bold text-slate-900 dark:text-slate-100">Configurações do Aluno</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Personalize sua experiência de estudo e dados locais</p>
+        </div>
+        <button type="button" id="closeSettingsBtn" aria-label="Fechar configurações" class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-rosebrand-50 hover:text-rosebrand-700 dark:border-darksurface-700 dark:text-slate-300 dark:hover:bg-darksurface-800">
+          ✕
+        </button>
+      </div>
+
+      <div class="mt-5 space-y-4 text-sm">
+        <div>
+          <label for="prefCefrSelect" class="mb-1.5 block font-medium text-slate-700 dark:text-slate-200">Nível CEFR preferido para destaque</label>
+          <select id="prefCefrSelect" class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-900 focus:border-rosebrand-400 focus:outline-none focus:ring-2 focus:ring-rosebrand-200 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-100">
+            <option value="all">Todos os níveis (A1–C1)</option>
+            <option value="A2">A2 (Básico / Pré-intermediário)</option>
+            <option value="B1">B1 (Intermediário)</option>
+            <option value="B2">B2 (Intermediário-Avançado)</option>
+            <option value="C1">C1 (Avançado)</option>
+          </select>
+        </div>
+
+        <label class="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-slate-200 p-3.5 dark:border-darksurface-800">
+          <div>
+            <p class="font-medium text-slate-800 dark:text-slate-100">Fonte ampla e maior espaçamento em leitura</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Facilita a leitura de textos longos em Reading e transcrições</p>
+          </div>
+          <input type="checkbox" id="prefComfortableText" class="h-5 w-5 rounded accent-rosebrand-600" />
+        </label>
+
+        <label class="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-slate-200 p-3.5 dark:border-darksurface-800">
+          <div>
+            <p class="font-medium text-slate-800 dark:text-slate-100">Dicas de pronúncia e ritmo na fala</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Exibe lembretes de connected speech e entonação no Speaking</p>
+          </div>
+          <input type="checkbox" id="prefPronunciationHints" class="h-5 w-5 rounded accent-rosebrand-600" />
+        </label>
+
+        <div class="rounded-xl border border-rosebrand-200/80 bg-rosebrand-50/50 p-3.5 dark:border-rosebrand-400/20 dark:bg-darksurface-800/80">
+          <p class="text-xs font-semibold text-rosebrand-700 dark:text-rosebrand-300" id="settingsAccountSummary">Conta: Visitante</p>
+          <p class="mt-0.5 text-xs text-slate-600 dark:text-slate-400" id="settingsStorageStats">0 lições concluídas • Nível: não avaliado</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button type="button" id="exportProgressBtn" class="rounded-lg border border-rosebrand-300 bg-white px-3 py-1.5 text-xs font-semibold text-rosebrand-700 hover:bg-rosebrand-50 dark:border-rosebrand-400/30 dark:bg-darksurface-900 dark:text-rosebrand-200">
+              Exportar progresso (JSON)
+            </button>
+            <button type="button" id="resetProgressBtn" class="rounded-lg border border-rosebrand-200 bg-rosebrand-100/70 px-3 py-1.5 text-xs font-semibold text-rosebrand-700 hover:bg-rosebrand-100 dark:border-rosebrand-400/30 dark:bg-rosebrand-500/15 dark:text-rosebrand-200">
+              Limpar progresso local
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end gap-2 border-t border-slate-100 pt-4 dark:border-darksurface-800">
+        <button type="button" id="saveSettingsBtn" class="min-h-[42px] rounded-xl bg-rosebrand-600 px-5 py-2 text-sm font-semibold text-white hover:bg-rosebrand-700">
+          Salvar configurações
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteúdo principal -->
+  <main class="mx-auto max-w-7xl px-4 pb-28 pt-6 sm:px-6 sm:pt-8">
+    <!-- ===================================================================== -->
+    <!-- VIEW 1: TRILHAS (VISÃO GERAL)                                         -->
+    <!-- ===================================================================== -->
+    <section id="viewHome" class="space-y-7">
+      <!-- Hero + Card de Teste de Proficiência -->
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
+        <div class="rounded-2xl border border-rosebrand-200/80 bg-gradient-to-br from-rosebrand-50/75 via-white to-white p-6 shadow-xs dark:border-rosebrand-400/20 dark:from-rosebrand-500/10 dark:via-darksurface-900 dark:to-darksurface-900 lg:col-span-7 sm:p-7">
+          <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-rosebrand-200 bg-white px-3 py-1 text-xs font-medium text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-darksurface-800 dark:text-rosebrand-200">
+            <span class="h-2 w-2 rounded-full bg-rosebrand-500"></span>
+            Sem mensalidade • Sem cartão de crédito
+          </div>
+          <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
+            Inglês acessível de verdade, com trilhas estruturadas e fontes abertas.
+          </h1>
+          <p class="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">
+            Criado para quem não pode arcar com cursinhos caros ou aulas particulares. Navegue pelas abas dedicadas de
+            <strong class="font-semibold text-slate-800 dark:text-slate-100">Listening</strong>,
+            <strong class="font-semibold text-slate-800 dark:text-slate-100">Speaking</strong>,
+            <strong class="font-semibold text-slate-800 dark:text-slate-100">Reading</strong> e
+            <strong class="font-semibold text-slate-800 dark:text-slate-100">Writing</strong> ou filtre por trilha temática abaixo.
+          </p>
+
+          <div class="mt-5 flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-slate-300 sm:text-sm">
+            <div class="rounded-xl border border-slate-200 bg-white px-3.5 py-2 dark:border-darksurface-700 dark:bg-darksurface-800">
+              <span class="font-semibold text-rosebrand-700 dark:text-rosebrand-300" id="completedCountLabel">0</span>
+              <span>lições concluídas</span>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white px-3.5 py-2 dark:border-darksurface-700 dark:bg-darksurface-800">
+              <span>Nível estimado:</span>
+              <strong class="font-semibold text-slate-900 dark:text-slate-100" id="estimatedLevelLabel">Ainda não avaliado</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card de destaque: Teste de Proficiência CEFR -->
+        <div class="flex flex-col justify-between rounded-2xl border border-rosebrand-200 bg-rosebrand-50/55 p-6 dark:border-rosebrand-400/25 dark:bg-darksurface-900 lg:col-span-5 sm:p-7">
+          <div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="rounded-lg bg-rosebrand-100 px-2.5 py-1 text-xs font-semibold text-rosebrand-700 dark:bg-rosebrand-500/20 dark:text-rosebrand-200">
+                Diagnóstico CEFR (A1–C1)
+              </span>
+              <span class="text-xs font-medium text-slate-500 dark:text-slate-400">~4 min</span>
+            </div>
+            <h2 class="mt-3.5 text-xl font-bold text-slate-900 dark:text-slate-100">
+              Teste de Proficiência em Inglês
+            </h2>
+            <p class="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+              Descubra sua faixa inicial para focar nas lições certas. Durante o teste, o
+              <strong class="font-semibold text-slate-800 dark:text-slate-100">Tutor IA fica bloqueado</strong> para preservar a precisão do seu resultado.
+            </p>
+          </div>
+
+          <div class="mt-6 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              id="goToAssessmentFromHome"
+              class="inline-flex min-h-[44px] flex-1 items-center justify-center rounded-xl bg-rosebrand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-rosebrand-700 focus:outline-none focus:ring-2 focus:ring-rosebrand-300"
+            >
+              Fazer teste de proficiência
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtros: Trilha Temática + Habilidade -->
+      <div class="space-y-5 rounded-2xl border border-slate-200/90 bg-white p-5 dark:border-darksurface-800 dark:bg-darksurface-900 sm:p-6">
+        <!-- Filtro 1: Trilha Temática -->
+        <div>
+          <div class="mb-2.5 flex items-center justify-between gap-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              1. Trilha temática
+            </span>
+            <button
+              type="button"
+              id="resetFiltersBtn"
+              class="text-xs font-medium text-rosebrand-600 hover:text-rosebrand-700 hover:underline dark:text-rosebrand-300"
+            >
+              Limpar filtros
+            </button>
+          </div>
+          <div id="trackFilterGroup" class="flex flex-wrap gap-2" role="group" aria-label="Filtrar por trilha temática">
+            <button type="button" data-track="all" class="track-chip min-h-[42px] rounded-full border px-4 py-2 text-sm font-medium transition">
+              Todas as trilhas
+            </button>
+            <button type="button" data-track="everyday" class="track-chip min-h-[42px] rounded-full border px-4 py-2 text-sm font-medium transition">
+              Fluência do dia a dia
+            </button>
+            <button type="button" data-track="business-tech" class="track-chip min-h-[42px] rounded-full border px-4 py-2 text-sm font-medium transition">
+              Business &amp; Tech/Dev
+            </button>
+            <button type="button" data-track="travel" class="track-chip min-h-[42px] rounded-full border px-4 py-2 text-sm font-medium transition">
+              Viagem e turismo
+            </button>
+            <button type="button" data-track="academic" class="track-chip min-h-[42px] rounded-full border px-4 py-2 text-sm font-medium transition">
+              Acadêmico, provas e proficiência
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtro 2: Habilidade -->
+        <div class="border-t border-slate-100 pt-4 dark:border-darksurface-800">
+          <span class="mb-2.5 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            2. Habilidade (ou abra a aba dedicada no topo)
+          </span>
+          <div id="skillFilterGroup" class="flex flex-wrap gap-2" role="group" aria-label="Filtrar por habilidade">
+            <button type="button" data-skill="all" class="skill-chip min-h-[40px] rounded-xl border px-3.5 py-1.5 text-sm font-medium transition">
+              Todas
+            </button>
+            <button type="button" data-skill="Listening" class="skill-chip min-h-[40px] rounded-xl border px-3.5 py-1.5 text-sm font-medium transition">
+              Listening
+            </button>
+            <button type="button" data-skill="Speaking" class="skill-chip min-h-[40px] rounded-xl border px-3.5 py-1.5 text-sm font-medium transition">
+              Speaking
+            </button>
+            <button type="button" data-skill="Reading" class="skill-chip min-h-[40px] rounded-xl border px-3.5 py-1.5 text-sm font-medium transition">
+              Reading
+            </button>
+            <button type="button" data-skill="Writing" class="skill-chip min-h-[40px] rounded-xl border px-3.5 py-1.5 text-sm font-medium transition">
+              Writing
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumo de resultados e Grade de Lições -->
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100" id="lessonsHeading">
+            Lições disponíveis
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 sm:text-sm" id="activeFilterSummary">
+            Mostrando todas as trilhas e habilidades
+          </p>
+        </div>
+
+        <div id="lessonsGrid" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <!-- Preenchido via JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 2: ABA DEDICADA — LISTENING                                      -->
+    <!-- ===================================================================== -->
+    <section id="viewListening" class="hidden space-y-6">
+      <div class="rounded-2xl border border-rosebrand-200/80 bg-rosebrand-50/45 p-6 dark:border-rosebrand-400/20 dark:bg-darksurface-900">
+        <span class="rounded-full bg-rosebrand-100 px-3 py-1 text-xs font-semibold text-rosebrand-700 dark:bg-rosebrand-500/20 dark:text-rosebrand-200">
+          Trilha de Escuta e Compreensão
+        </span>
+        <h1 class="mt-2.5 text-2xl font-bold text-slate-900 dark:text-slate-100">Listening — Aulas Abertas, BBC &amp; Oxford</h1>
+        <p class="mt-1.5 max-w-3xl text-sm text-slate-600 dark:text-slate-300">
+          Treine o ouvido com episódios curtos, ritmo acadêmico de aulas abertas (MIT OCW / edX / Coursera) e diálogos de pronúncia. Ouça em inglês pelo navegador, abra a transcrição quando precisar e responda às 3 perguntas.
+        </p>
+      </div>
+      <div id="listeningContainer" class="space-y-6"></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 3: ABA DEDICADA — SPEAKING                                       -->
+    <!-- ===================================================================== -->
+    <section id="viewSpeaking" class="hidden space-y-6">
+      <div class="rounded-2xl border border-rosebrand-200/80 bg-rosebrand-50/45 p-6 dark:border-rosebrand-400/20 dark:bg-darksurface-900">
+        <span class="rounded-full bg-rosebrand-100 px-3 py-1 text-xs font-semibold text-rosebrand-700 dark:bg-rosebrand-500/20 dark:text-rosebrand-200">
+          Trilha de Fala, Pronúncia e Expressão Oral
+        </span>
+        <h1 class="mt-2.5 text-2xl font-bold text-slate-900 dark:text-slate-100">Speaking — Cenários Reais, Fonética e Argumentação</h1>
+        <p class="mt-1.5 max-w-3xl text-sm text-slate-600 dark:text-slate-300">
+          Pratique daily stand-up, entrevistas, atendimento em viagem e argumentação com roteiro guiado, escuta modelo, checklist de entonação/connected speech e autoavaliação guiada.
+        </p>
+      </div>
+      <div id="speakingContainer" class="space-y-6"></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 4: ABA DEDICADA — READING                                        -->
+    <!-- ===================================================================== -->
+    <section id="viewReading" class="hidden space-y-6">
+      <div class="rounded-2xl border border-rosebrand-200/80 bg-rosebrand-50/45 p-6 dark:border-rosebrand-400/20 dark:bg-darksurface-900">
+        <span class="rounded-full bg-rosebrand-100 px-3 py-1 text-xs font-semibold text-rosebrand-700 dark:bg-rosebrand-500/20 dark:text-rosebrand-200">
+          Trilha de Leitura, Interpretação e Vocabulário
+        </span>
+        <h1 class="mt-2.5 text-2xl font-bold text-slate-900 dark:text-slate-100">Reading — OpenLearn, MIT OCW &amp; OER</h1>
+        <p class="mt-1.5 max-w-3xl text-sm text-slate-600 dark:text-slate-300">
+          Leia textos graduados de fontes educacionais abertas, explore vocabulário e collocations em contexto e responda a questões de inferência e compreensão.
+        </p>
+      </div>
+      <div id="readingContainer" class="space-y-6"></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 5: ABA DEDICADA — WRITING                                        -->
+    <!-- ===================================================================== -->
+    <section id="viewWriting" class="hidden space-y-6">
+      <div class="rounded-2xl border border-rosebrand-200/80 bg-rosebrand-50/45 p-6 dark:border-rosebrand-400/20 dark:bg-darksurface-900">
+        <span class="rounded-full bg-rosebrand-100 px-3 py-1 text-xs font-semibold text-rosebrand-700 dark:bg-rosebrand-500/20 dark:text-rosebrand-200">
+          Trilha de Escrita, Estrutura e Clareza
+        </span>
+        <h1 class="mt-2.5 text-2xl font-bold text-slate-900 dark:text-slate-100">Writing — Academic Writing, E-mails e Exames</h1>
+        <p class="mt-1.5 max-w-3xl text-sm text-slate-600 dark:text-slate-300">
+          Desenvolva clareza, estrutura de parágrafos, coesão e vocabulário alinhados a referências de escrita acadêmica e exames de proficiência, com contador de palavras e feedback por critério.
+        </p>
+      </div>
+      <div id="writingContainer" class="space-y-6"></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 6: TESTE DE PROFICIÊNCIA CEFR (COM BLOQUEIO DO AGENTE DE IA)     -->
+    <!-- ===================================================================== -->
+    <section id="viewAssessment" class="hidden space-y-6">
+      <div class="mx-auto max-w-3xl rounded-2xl border border-rosebrand-200 bg-white p-6 shadow-xs dark:border-rosebrand-400/25 dark:bg-darksurface-900 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4 dark:border-darksurface-800">
+          <div>
+            <span class="rounded-full bg-rosebrand-50 px-3 py-1 text-xs font-semibold text-rosebrand-700 ring-1 ring-rosebrand-200 dark:bg-rosebrand-500/15 dark:text-rosebrand-200 dark:ring-rosebrand-400/30">
+              Avaliação Diagnóstica • A1 a C1
+            </span>
+            <h1 class="mt-2.5 text-2xl font-bold text-slate-900 dark:text-slate-100">Teste de Proficiência em Inglês</h1>
+          </div>
+          <button
+            type="button"
+            id="backToTracksFromTest"
+            class="min-h-[40px] rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 hover:bg-rosebrand-50/50 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-200 dark:hover:bg-darksurface-700"
+          >
+            Voltar às trilhas
+          </button>
+        </div>
+
+        <!-- Aviso de bloqueio do Tutor IA durante o teste -->
+        <div class="mt-4 flex items-start gap-3 rounded-xl border border-rosebrand-200 bg-rosebrand-50/85 p-3.5 text-sm text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-rosebrand-500/15 dark:text-rosebrand-200">
+          <svg class="mt-0.5 h-5 w-5 shrink-0 text-rosebrand-600 dark:text-rosebrand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <div>
+            <p class="font-semibold">Tutor IA bloqueado durante o teste</p>
+            <p class="text-xs text-rosebrand-700/90 dark:text-rosebrand-200/90 sm:text-sm">
+              Para medir seu nível real sem interferência, o assistente no canto da tela está temporariamente desativado nesta avaliação.
+            </p>
+          </div>
+        </div>
+
+        <!-- Área dinâmica das perguntas / resultado -->
+        <div id="assessmentContainer" class="mt-6 space-y-5">
+          <!-- Renderizado via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 7: LOGIN / CONTA GRATUITA                                        -->
+    <!-- ===================================================================== -->
+    <section id="viewLogin" class="hidden">
+      <div class="mx-auto grid max-w-4xl grid-cols-1 gap-6 rounded-2xl border border-rosebrand-200/80 bg-white p-6 shadow-xs dark:border-rosebrand-400/20 dark:bg-darksurface-900 md:grid-cols-12 sm:p-8">
+        <div class="flex flex-col justify-between rounded-xl border border-rosebrand-100 bg-rosebrand-50/65 p-6 dark:border-rosebrand-400/20 dark:bg-darksurface-800 md:col-span-5">
+          <div>
+            <span class="inline-block rounded-full bg-white px-3 py-1 text-xs font-semibold text-rosebrand-700 ring-1 ring-rosebrand-200 dark:bg-darksurface-900 dark:text-rosebrand-200 dark:ring-rosebrand-400/30">
+              Acesso 100% gratuito
+            </span>
+            <h1 class="mt-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              Sua jornada de inglês sem barreiras financeiras.
+            </h1>
+            <p class="mt-2.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+              Entre com seu e-mail ou continue como visitante. Seu progresso nas trilhas, configurações e resultado do teste ficam salvos no navegador.
+            </p>
+          </div>
+          <ul class="mt-6 space-y-2.5 text-xs text-slate-700 dark:text-slate-200 sm:text-sm">
+            <li class="flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-rosebrand-500"></span>
+              Abas dedicadas de Listening, Speaking, Reading e Writing
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-rosebrand-500"></span>
+              Tutor IA para dúvidas e traduções nas trilhas
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-rosebrand-500"></span>
+              Sem cobrança escondida ou cartão
+            </li>
+          </ul>
+        </div>
+
+        <div class="flex flex-col justify-center md:col-span-7">
+          <h2 class="text-xl font-bold text-slate-900 dark:text-slate-100">Entrar ou criar conta gratuita</h2>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Use um nome e e-mail para identificar seu progresso local.
+          </p>
+
+          <form id="loginForm" class="mt-5 space-y-4">
+            <div>
+              <label for="studentName" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">
+                Seu nome
+              </label>
+              <input
+                type="text"
+                id="studentName"
+                required
+                placeholder="Ex.: Marina Silva"
+                class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-rosebrand-400 focus:outline-none focus:ring-2 focus:ring-rosebrand-200 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-100"
+              />
+            </div>
+
+            <div>
+              <label for="studentEmail" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">
+                E-mail
+              </label>
+              <input
+                type="email"
+                id="studentEmail"
+                required
+                placeholder="marina@exemplo.com"
+                class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-rosebrand-400 focus:outline-none focus:ring-2 focus:ring-rosebrand-200 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-100"
+              />
+            </div>
+
+            <div class="flex flex-col gap-3 pt-2 sm:flex-row">
+              <button
+                type="submit"
+                class="min-h-[44px] flex-1 rounded-xl bg-rosebrand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rosebrand-700 focus:outline-none focus:ring-2 focus:ring-rosebrand-300"
+              >
+                Salvar e ir para as trilhas
+              </button>
+              <button
+                type="button"
+                id="continueGuestBtn"
+                class="min-h-[44px] rounded-xl border border-rosebrand-200 bg-rosebrand-50 px-4 py-2.5 text-sm font-semibold text-rosebrand-700 transition hover:bg-rosebrand-100 focus:outline-none focus:ring-2 focus:ring-rosebrand-300 dark:border-rosebrand-400/30 dark:bg-darksurface-800 dark:text-rosebrand-200"
+              >
+                Continuar como visitante
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- AGENTE DE IA FLUTUANTE NO CANTO INFERIOR DIREITO                      -->
+  <!-- Ativo nas trilhas e lições; bloqueado automaticamente no teste        -->
+  <!-- ===================================================================== -->
+  <aside id="aiTutorWidget" aria-label="Tutor IA das Trilhas" class="fixed bottom-4 right-4 z-40 sm:bottom-6 sm:right-6">
+    <!-- Painel expansível do chat -->
+    <div
+      id="aiChatPanel"
+      class="mb-3 hidden w-[calc(100vw-2rem)] max-w-sm overflow-hidden rounded-2xl border border-rosebrand-200 bg-white shadow-xl dark:border-rosebrand-400/30 dark:bg-darksurface-900"
+    >
+      <!-- Cabeçalho do Tutor IA -->
+      <div class="flex items-center justify-between gap-2 border-b border-rosebrand-100 bg-rosebrand-50/75 px-4 py-3 dark:border-darksurface-800 dark:bg-darksurface-800">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span id="aiStatusDot" class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+            <h2 class="truncate text-sm font-bold text-slate-900 dark:text-slate-100">Tutor IA das Trilhas</h2>
+          </div>
+          <p id="aiModeSubtitle" class="truncate text-xs text-slate-600 dark:text-slate-300">
+            Traduções contextuais e dicas nas lições
+          </p>
+        </div>
+        <button
+          type="button"
+          id="closeAiPanelBtn"
+          aria-label="Minimizar Tutor IA"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rosebrand-200 bg-white text-slate-600 hover:bg-rosebrand-50 hover:text-rosebrand-700 dark:border-darksurface-700 dark:bg-darksurface-900 dark:text-slate-300"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Aviso de bloqueio visível quando view === 'assessment' -->
+      <div id="aiBlockedBanner" class="hidden border-b border-rosebrand-200 bg-rosebrand-50 px-4 py-3 text-xs text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-rosebrand-500/15 dark:text-rosebrand-200">
+        <p class="font-semibold">Acesso bloqueado durante o Teste de Proficiência</p>
+        <p class="mt-0.5 text-rosebrand-700/90 dark:text-rosebrand-200/90">
+          O Tutor IA só pode ajudar nas trilhas de estudo. Volte para uma aba de trilha para tirar dúvidas e pedir traduções.
+        </p>
+      </div>
+
+      <!-- Sugestões rápidas de perguntas -->
+      <div id="aiQuickPrompts" class="flex flex-wrap gap-1.5 border-b border-slate-100 bg-white px-3.5 py-2.5 dark:border-darksurface-800 dark:bg-darksurface-900">
+        <button
+          type="button"
+          data-prompt="O que significa maybe nesse contexto?"
+          class="ai-quick-btn rounded-full border border-rosebrand-200 bg-rosebrand-50/70 px-2.5 py-1 text-xs font-medium text-rosebrand-700 transition hover:bg-rosebrand-100 dark:border-rosebrand-400/30 dark:bg-darksurface-800 dark:text-rosebrand-200"
+        >
+          O que significa "maybe" aqui?
+        </button>
+        <button
+          type="button"
+          data-prompt="Me dê uma dica para entender o texto sem traduzir tudo."
+          class="ai-quick-btn rounded-full border border-rosebrand-200 bg-rosebrand-50/70 px-2.5 py-1 text-xs font-medium text-rosebrand-700 transition hover:bg-rosebrand-100 dark:border-rosebrand-400/30 dark:bg-darksurface-800 dark:text-rosebrand-200"
+        >
+          Dica de leitura
+        </button>
+      </div>
+
+      <!-- Mensagens -->
+      <div id="aiMessagesList" class="custom-scroll flex max-h-64 flex-col gap-2.5 overflow-y-auto bg-white p-3.5 text-sm dark:bg-darksurface-900">
+        <div class="rounded-xl border border-rosebrand-100 bg-rosebrand-50/55 p-3 text-slate-700 dark:border-rosebrand-400/20 dark:bg-darksurface-800 dark:text-slate-200">
+          Oi! Estou aqui para ajudar nas <strong class="font-semibold text-rosebrand-700 dark:text-rosebrand-300">trilhas</strong>. Pergunte sobre expressões como <em>"maybe"</em>, peça tradução de um trecho ou uma dica antes de responder à atividade.
+        </div>
+      </div>
+
+      <!-- Formulário de envio -->
+      <form id="aiChatForm" class="flex items-center gap-2 border-t border-slate-200 bg-slate-50/60 p-2.5 dark:border-darksurface-800 dark:bg-darksurface-800/70">
+        <input
+          type="text"
+          id="aiChatInput"
+          placeholder="Ex.: O que significa maybe nesse contexto?"
+          autocomplete="off"
+          class="min-h-[40px] flex-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-rosebrand-400 focus:outline-none focus:ring-2 focus:ring-rosebrand-200 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 dark:border-darksurface-700 dark:bg-darksurface-900 dark:text-slate-100 dark:disabled:bg-darksurface-800"
+        />
+        <button
+          type="submit"
+          id="aiSendBtn"
+          class="min-h-[40px] rounded-xl bg-rosebrand-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-rosebrand-700 focus:outline-none focus:ring-2 focus:ring-rosebrand-300 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-darksurface-700"
+        >
+          Enviar
+        </button>
+      </form>
+    </div>
+
+    <!-- Botão flutuante no canto inferior direito -->
+    <div class="flex justify-end">
+      <button
+        type="button"
+        id="aiFabBtn"
+        class="inline-flex min-h-[48px] items-center gap-2.5 rounded-full border border-rosebrand-300 bg-rosebrand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:bg-rosebrand-700 focus:outline-none focus:ring-2 focus:ring-rosebrand-300"
+      >
+        <span id="aiFabIcon" aria-hidden="true">💬</span>
+        <span id="aiFabLabel">Tutor IA</span>
+      </button>
+    </div>
+  </aside>
+
+  <script>
+    /**
+     * Dados das trilhas e lições baseados em fontes abertas e referências acadêmicas/práticas.
+     */
+    const LESSONS = [
+      {
+        id: 'everyday-listening-1',
+        track: 'everyday',
+        trackLabel: 'Fluência do dia a dia',
+        skill: 'Listening',
+        level: 'A2',
+        title: 'Rotinas, planos flexíveis e expressões cotidianas',
+        source: 'BBC Learning English (6 Minute English)',
+        duration: '10 min',
+        summary: 'Compreensão de diálogos naturais com contrações e nuances como "maybe" ou "kind of".',
+        tip: 'Ouça uma vez para captar a ideia geral e uma segunda vez anotando apenas verbos e expressões de dúvida.'
+      },
+      {
+        id: 'everyday-speaking-1',
+        track: 'everyday',
+        trackLabel: 'Fluência do dia a dia',
+        skill: 'Speaking',
+        level: 'A2',
+        title: 'Concordar, discordar com educação e pedir esclarecimento',
+        source: 'Oxford Online English (Spoken English)',
+        duration: '11 min',
+        summary: 'Prática guiada de entonação e respostas curtas naturais em conversas do dia a dia.',
+        tip: 'Fale em voz alta pausadamente: clareza e ritmo natural valem mais do que falar rápido.'
+      },
+      {
+        id: 'business-tech-speaking-1',
+        track: 'business-tech',
+        trackLabel: 'Business & Tech/Dev',
+        skill: 'Speaking',
+        level: 'B1',
+        title: 'Daily stand-up: progresso, bloqueios e revisão de código',
+        source: 'Career & Tech Roleplay',
+        duration: '12 min',
+        summary: 'Estruture atualizações objetivas em reuniões ágeis e explique impedimentos técnicos.',
+        tip: 'Use a estrutura em 3 partes: o que fiz ontem, o que farei hoje e se há algum bloqueio.'
+      },
+      {
+        id: 'business-tech-writing-1',
+        track: 'business-tech',
+        trackLabel: 'Business & Tech/Dev',
+        skill: 'Writing',
+        level: 'B1',
+        title: 'E-mail e documentação curta para alinhar prazos e decisões',
+        source: 'Business & Career Communication',
+        duration: '14 min',
+        summary: 'Escreva mensagens diretas, educadas e fáceis de escanear para equipes e clientes.',
+        tip: 'Coloque o pedido ou decisão principal já no primeiro parágrafo para facilitar a leitura.'
+      },
+      {
+        id: 'business-tech-reading-1',
+        track: 'business-tech',
+        trackLabel: 'Business & Tech/Dev',
+        skill: 'Reading',
+        level: 'B2',
+        title: 'Leitura de artigos técnicos e notas de arquitetura',
+        source: 'Open Educational Resources (OER)',
+        duration: '15 min',
+        summary: 'Identifique trade-offs, hipóteses e conclusões em textos profissionais em inglês.',
+        tip: 'Não trave em cada termo técnico desconhecido: deduza pelo contexto antes de traduzir.'
+      },
+      {
+        id: 'travel-listening-1',
+        track: 'travel',
+        trackLabel: 'Viagem e turismo',
+        skill: 'Listening',
+        level: 'A2',
+        title: 'Avisos de embarque, transporte público e check-in',
+        source: 'Oxford Online English (Listening)',
+        duration: '10 min',
+        summary: 'Treine a escuta de números, horários, portões e instruções rápidas em viagem.',
+        tip: 'Preste atenção especial a números, preposições de lugar e mudanças de horário ou plataforma.'
+      },
+      {
+        id: 'travel-speaking-1',
+        track: 'travel',
+        trackLabel: 'Viagem e turismo',
+        skill: 'Speaking',
+        level: 'A2',
+        title: 'Pedindo ajuda, direções e resolvendo imprevistos no hotel',
+        source: 'LINCS Adult ESL & Practical Dialogues',
+        duration: '12 min',
+        summary: 'Frases úteis e polidas para situações inesperadas durante viagens.',
+        tip: 'Comece com "Excuse me, could you help me..." para manter o tom cordial e claro.'
+      },
+      {
+        id: 'academic-reading-1',
+        track: 'academic',
+        trackLabel: 'Acadêmico, provas e proficiência',
+        skill: 'Reading',
+        level: 'B2',
+        title: 'Leitura crítica, tese central e inferência em textos abertos',
+        source: 'The Open University (OpenLearn) / MIT OCW',
+        duration: '16 min',
+        summary: 'Analise argumentos, evidências e vocabulário acadêmico em leituras universitárias abertas.',
+        tip: 'Localize a tese do autor e observe conectores como "however", "therefore" e "although".'
+      },
+      {
+        id: 'academic-writing-1',
+        track: 'academic',
+        trackLabel: 'Acadêmico, provas e proficiência',
+        skill: 'Writing',
+        level: 'C1',
+        title: 'Parágrafos argumentativos, coesão e critérios de exames',
+        source: 'MIT OpenCourseWare / Proficiency Rubric Guide',
+        duration: '18 min',
+        summary: 'Desenvolva tópico frasal, justificativas e conclusão clara para provas e redações.',
+        tip: 'Cada parágrafo deve defender uma ideia central com pelo menos um exemplo concreto.'
+      }
+    ];
+
+    /**
+     * Conteúdos dedicados da aba LISTENING (aulas abertas, BBC 6 Minute English, Oxford Online English).
+     */
+    const LISTENING_MODULES = [
+      {
+        id: 'listen-bbc-1',
+        source: 'BBC Learning English • 6 Minute English',
+        level: 'A2–B1',
+        title: 'Flexible Plans & Everyday Hedging ("Maybe" in Context)',
+        audioText: 'Hey Maya, are you free for a quick coffee after the afternoon session? Maybe for twenty minutes! I still need to wrap up my notes, so I cannot promise a long break, but grabbing a quick coffee sounds great.',
+        keywords: [
+          { term: 'maybe', meaning: 'talvez / possibilidade aberta sem compromisso rígido' },
+          { term: 'wrap up', meaning: 'finalizar / concluir uma tarefa' },
+          { term: 'sounds great', meaning: 'parece ótimo (resposta natural e positiva)' }
+        ],
+        transcript: 'Maya: "Maybe for twenty minutes! I still need to wrap up my notes, so I cannot promise a long break, but grabbing a quick coffee sounds great."',
+        questions: [
+          {
+            q: '1. Como Maya responde ao convite inicial?',
+            options: ['Diz que talvez consiga por cerca de 20 minutos.', 'Recusa definitivamente por causa do trabalho.', 'Aceita passar a noite inteira conversando.'],
+            answer: 0
+          },
+          {
+            q: '2. O que significa "wrap up my notes" nesse contexto?',
+            options: ['Rasgar as anotações.', 'Concluir / finalizar as anotações.', 'Enviar um áudio pelo celular.'],
+            answer: 1
+          },
+          {
+            q: '3. Por que "maybe" é adequado ali?',
+            options: ['Porque ela ainda precisa terminar uma tarefa antes.', 'Porque ela tem certeza absoluta do horário.', 'Porque é uma ordem formal por escrito.'],
+            answer: 0
+          }
+        ]
+      },
+      {
+        id: 'listen-mit-1',
+        source: 'MIT OpenCourseWare / Aulas Abertas Universitárias',
+        level: 'B2',
+        title: 'Academic Lecture Rhythm: Distinguishing Claim from Evidence',
+        audioText: 'In today\'s lecture, we examine how open educational resources reduce cost barriers. While initial setup requires careful curation, long-term access allows students to revisit core concepts at their own pace.',
+        keywords: [
+          { term: 'barriers', meaning: 'barreiras / obstáculos' },
+          { term: 'curation', meaning: 'curadoria / seleção criteriosa de materiais' },
+          { term: 'at their own pace', meaning: 'no próprio ritmo' }
+        ],
+        transcript: 'Lecturer: "In today\'s lecture, we examine how open educational resources reduce cost barriers. While initial setup requires careful curation, long-term access allows students to revisit core concepts at their own pace."',
+        questions: [
+          {
+            q: '1. Qual é o foco principal do trecho da aula aberta?',
+            options: ['Como recursos educacionais abertos reduzem barreiras de custo.', 'Como vender assinaturas mensais.', 'História da tipografia medieval.'],
+            answer: 0
+          },
+          {
+            q: '2. O que o trecho aponta sobre a etapa inicial?',
+            options: ['Que exige curadoria cuidadosa.', 'Que dispensa qualquer planejamento.', 'Que dura apenas cinco segundos.'],
+            answer: 0
+          },
+          {
+            q: '3. O que significa "at their own pace"?',
+            options: ['Sem poder pausar o estudo.', 'No próprio ritmo do estudante.', 'Em alta velocidade obrigatória.'],
+            answer: 1
+          }
+        ]
+      },
+      {
+        id: 'listen-oxford-1',
+        source: 'Oxford Online English • Listening & Pronunciation',
+        level: 'A2–B1',
+        title: 'Travel & Hotel: Checking In and Clarifying Details',
+        audioText: 'Good evening. I have a reservation under Lucas Silva. Could we check in early, or is the room still being cleaned? No problem at all if we need to leave our bags at reception first.',
+        keywords: [
+          { term: 'check in early', meaning: 'fazer check-in antecipado' },
+          { term: 'no problem at all', meaning: 'sem problema algum (tom cortês)' },
+          { term: 'leave our bags', meaning: 'deixar as malas guardadas' }
+        ],
+        transcript: 'Guest: "Good evening. I have a reservation under Lucas Silva. Could we check in early, or is the room still being cleaned? No problem at all if we need to leave our bags at reception first."',
+        questions: [
+          {
+            q: '1. O que o hóspede pergunta ao chegar?',
+            options: ['Se pode fazer check-in antecipado ou se o quarto ainda está sendo limpo.', 'Onde fica o aeroporto mais próximo.', 'Qual a senha do Wi-Fi de outro hotel.'],
+            answer: 0
+          },
+          {
+            q: '2. Qual alternativa o hóspede oferece caso o quarto não esteja pronto?',
+            options: ['Deixar as malas na recepção primeiro.', 'Cancelar a viagem inteira.', 'Dormir no saguão sem avisar.'],
+            answer: 0
+          },
+          {
+            q: '3. Qual é o tom da fala?',
+            options: ['Educado, flexível e colaborativo.', 'Ríspido e impaciente.', 'Puramente técnico de programação.'],
+            answer: 0
+          }
+        ]
+      }
+    ];
+
+    /**
+     * Conteúdos dedicados da aba SPEAKING (Business/Tech, Oxford phonetics, debate).
+     */
+    const SPEAKING_MODULES = [
+      {
+        id: 'speak-standup-1',
+        track: 'Business & Tech/Dev',
+        level: 'B1',
+        title: 'Daily Stand-up & Code Review Update',
+        scenario: 'Você está em uma reunião diária de 10 minutos com seu time de tecnologia e precisa relatar o que avançou, o que fará hoje e um pequeno bloqueio.',
+        modelPhrase: 'Yesterday I finished the API pagination tests. Today I am reviewing the pull request and updating the docs. Maybe we can sync for five minutes if the staging build is still slow.',
+        checklist: [
+          'Separei claramente o que foi feito, o que vem a seguir e o ponto de atenção.',
+          'Usei entonação natural sem ler palavra por palavra de forma robótica.',
+          'Apliquei connected speech em expressões curtas como "gonna / want to / for five minutes".'
+        ]
+      },
+      {
+        id: 'speak-debate-1',
+        track: 'Acadêmico & Critical Thinking',
+        level: 'B2',
+        title: 'Justifying an Opinion with Evidence',
+        scenario: 'Em um grupo de discussão ou entrevista, explique por que o estudo consistente em pequenos blocos diários costuma funcionar melhor do que maratonas esporádicas.',
+        modelPhrase: 'In my view, short daily practice is more sustainable because retention improves when you revisit ideas regularly. For example, twenty minutes a day helps build a real habit without burning out.',
+        checklist: [
+          'Apresentei minha posição logo no início ("In my view...").',
+          'Sustentei a opinião com um exemplo concreto ("For example...").',
+          'Mantive ritmo pausado e ênfase nas palavras-chave.'
+        ]
+      }
+    ];
+
+    /**
+     * Conteúdos dedicados da aba READING (OpenLearn, MIT OCW, OER Commons).
+     */
+    const READING_MODULES = [
+      {
+        id: 'read-openlearn-1',
+        source: 'The Open University (OpenLearn)',
+        level: 'B1–B2',
+        title: 'Building Vocabulary Through Context Clues',
+        passage: 'Many learners feel discouraged when they encounter an unfamiliar word in an English article and immediately stop to translate every term. However, skilled readers often infer meaning from surrounding clues. For instance, if a sentence describes a task as "tedious, requiring hours of repetitive data entry", context suggests that "tedious" means tiresome or monotonous.',
+        vocab: [
+          { word: 'unfamiliar', note: 'desconhecido / não familiar' },
+          { word: 'infer meaning', note: 'deduzir / inferir o significado pelo contexto' },
+          { word: 'tedious', note: 'tedioso / cansativo e repetitivo' }
+        ],
+        questions: [
+          {
+            q: '1. Qual hábito costuma desanimar muitos estudantes segundo o texto?',
+            options: ['Parar imediatamente para traduzir cada palavra desconhecida.', 'Ler em voz alta com calma.', 'Anotar palavras novas em um caderno.'],
+            answer: 0
+          },
+          {
+            q: '2. Como o texto ajuda a inferir o significado de "tedious"?',
+            options: ['Associando-o a horas de entrada de dados repetitiva.', 'Dizendo que é o mesmo que "divertido".', 'Explicando a história do latim clássico.'],
+            answer: 0
+          }
+        ]
+      },
+      {
+        id: 'read-mit-1',
+        source: 'MIT OpenCourseWare • Literature & Humanities',
+        level: 'B2–C1',
+        title: 'Clarity and Precision in Argumentative Prose',
+        passage: 'Strong academic writing does not rely on ornate language for its own sake; rather, it clarifies complex relationships between ideas. When a writer links a claim to concrete evidence and acknowledges counterarguments, the reader can follow the reasoning even when the subject matter is demanding.',
+        vocab: [
+          { word: 'relies on', note: 'collocation: depende de / baseia-se em' },
+          { word: 'counterarguments', note: 'contra-argumentos / objeções' },
+          { word: 'demanding', note: 'exigente / desafiador' }
+        ],
+        questions: [
+          {
+            q: '1. O que torna a escrita acadêmica forte de acordo com o trecho?',
+            options: ['Clareza nas relações entre ideias e uso de evidências.', 'Uso de frases confusas apenas para parecer difícil.', 'Ignorar qualquer contra-argumento.'],
+            answer: 0
+          },
+          {
+            q: '2. O que a palavra "demanding" indica sobre o tema?',
+            options: ['Que o assunto é exigente ou desafiador.', 'Que o assunto é infantil.', 'Que o texto não tem conclusão.'],
+            answer: 0
+          }
+        ]
+      }
+    ];
+
+    /**
+     * Conteúdos dedicados da aba WRITING (Academic Writing, e-mail técnico, critérios de proficiência).
+     */
+    const WRITING_MODULES = [
+      {
+        id: 'write-email-1',
+        track: 'Business & Tech/Dev',
+        level: 'B1',
+        title: 'E-mail Objetivo para Alinhar Prazo ou Dúvida',
+        prompt: 'Escreva de 3 a 6 frases em inglês para um colega ou equipe explicando que você revisou o material/tarefa, apontando um ponto que precisa de confirmação e propondo um próximo passo.',
+        minWords: 20,
+        helpfulPhrases: ['Hi [Name], I reviewed...', 'Could you clarify...', 'Let me know if...']
+      },
+      {
+        id: 'write-paragraph-1',
+        track: 'Acadêmico, Provas & Proficiência',
+        level: 'B2',
+        title: 'Parágrafo Argumentativo (Tese + Exemplo + Conclusão)',
+        prompt: 'Escreva um parágrafo em inglês (35 a 90 palavras) defendendo uma ideia sobre aprendizado de idiomas ou tecnologia na educação, usando ao menos um conector como "however", "because" ou "therefore".',
+        minWords: 25,
+        helpfulPhrases: ['In my opinion...', 'For example...', 'Therefore...']
+      }
+    ];
+
+    /**
+     * Perguntas do Teste de Proficiência CEFR (A1 a C1).
+     */
+    const ASSESSMENT_QUESTIONS = [
+      {
+        id: 'q1',
+        cefr: 'A1/A2',
+        prompt: 'Complete a frase: "She ____ coffee every morning before work."',
+        options: ['drinks', 'drink', 'drinking', 'is drink'],
+        correctIndex: 0
+      },
+      {
+        id: 'q2',
+        cefr: 'A2/B1',
+        prompt: 'Qual opção expressa melhor uma possibilidade incerta no dia a dia?',
+        options: ['Maybe I will join the call later.', 'I musted join the call yesterday.', 'She have been go tomorrow.', 'They was arrive early.'],
+        correctIndex: 0
+      },
+      {
+        id: 'q3',
+        cefr: 'B1/B2',
+        prompt: 'Escolha a frase mais adequada para um relatório profissional:',
+        options: [
+          'The release was delayed due to an unexpected dependency issue.',
+          'The release is delayed because of it was broken maybe.',
+          'We delay the release since yesterday morning always.',
+          'The release delaying because of too much bug.'
+        ],
+        correctIndex: 0
+      },
+      {
+        id: 'q4',
+        cefr: 'B2/C1',
+        prompt: 'Em um texto acadêmico, "Nonetheless" introduz principalmente:',
+        options: [
+          'Um contraste ou ressalva em relação ao que foi dito antes',
+          'Uma lista cronológica de receitas',
+          'Uma saudação informal de encerramento',
+          'A definição literal de uma palavra'
+        ],
+        correctIndex: 0
+      }
+    ];
+
+    const STORAGE_KEY = 'fluencia_livre_state_v2';
+
+    /**
+     * Estado central da aplicação.
+     */
+    const appState = {
+      view: 'home', // 'home' | 'listening' | 'speaking' | 'reading' | 'writing' | 'assessment' | 'login'
+      track: 'all',
+      skill: 'all',
+      aiOpen: false,
+      user: null,
+      completedLessons: [],
+      estimatedLevel: null,
+      theme: 'light', // 'light' | 'dark'
+      settings: {
+        preferredCefr: 'all',
+        comfortableText: false,
+        pronunciationHints: true
+      },
+      assessmentStep: 0,
+      assessmentAnswers: [],
+      assessmentFinished: false
+    };
+
+    /**
+     * Carrega estado salvo localmente com segurança.
+     */
+    function loadSavedState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object') return;
+
+        appState.user = parsed.user || null;
+        appState.completedLessons = Array.isArray(parsed.completedLessons) ? parsed.completedLessons : [];
+        appState.estimatedLevel = parsed.estimatedLevel || null;
+        appState.theme = parsed.theme === 'dark' ? 'dark' : 'light';
+        if (parsed.settings && typeof parsed.settings === 'object') {
+          appState.settings.preferredCefr = parsed.settings.preferredCefr || 'all';
+          appState.settings.comfortableText = Boolean(parsed.settings.comfortableText);
+          appState.settings.pronunciationHints = parsed.settings.pronunciationHints !== false;
+        }
+      } catch (err) {
+        console.warn('Não foi possível ler o armazenamento local:', err);
+      }
+    }
+
+    /**
+     * Persiste progresso, tema e configurações no localStorage.
+     */
+    function persistState() {
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            user: appState.user,
+            completedLessons: appState.completedLessons,
+            estimatedLevel: appState.estimatedLevel,
+            theme: appState.theme,
+            settings: appState.settings
+          })
+        );
+      } catch (err) {
+        console.warn('Não foi possível salvar os dados localmente:', err);
+      }
+    }
+
+    /**
+     * Aplica o tema claro ou escuro real no documento.
+     */
+    function applyTheme() {
+      const root = document.documentElement;
+      const isDark = appState.theme === 'dark';
+      root.classList.toggle('dark', isDark);
+
+      const btn = document.getElementById('themeToggleBtn');
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      if (btn) btn.setAttribute('aria-pressed', String(isDark));
+      icon.innerHTML = isDark ? SUN_ICON : MOON_ICON;
+      if (label) label.textContent = isDark ? 'Modo claro' : 'Modo escuro';
+    }
+
+    const MOON_ICON = `<svg class="h-4 w-4 text-rosebrand-500 dark:text-rosebrand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+const SUN_ICON = `<svg class="h-4 w-4 text-rosebrand-500 dark:text-rosebrand-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+
+/**
+ * Aplica o tema claro ou escuro real no documento.
+ */
+function applyTheme() {
+  const root = document.documentElement;
+  const isDark = appState.theme === 'dark';
+  root.classList.toggle('dark', isDark);
+
+  const btn = document.getElementById('themeToggleBtn');
+  const icon = document.getElementById('themeIcon');
+  const label = document.getElementById('themeLabel');
+  if (btn) btn.setAttribute('aria-pressed', String(isDark));
+  if (icon) icon.innerHTML = isDark ? SUN_ICON : MOON_ICON;
+  if (label) label.textContent = isDark ? 'Modo claro' : 'Modo escuro';
+}
+
+    /**
+     * Aplica preferências tipográficas em textos de leitura/transcrição.
+     */
+    function applyTextPreferences() {
+      document.querySelectorAll('.adaptive-prose').forEach((el) => {
+        el.classList.toggle('reading-comfortable', Boolean(appState.settings.comfortableText));
+      });
+    }
+
+    /**
+     * Exibe mensagem discreta na tela.
+     */
+    let toastTimer = null;
+    function showToast(message) {
+      const banner = document.getElementById('toastBanner');
+      const content = document.getElementById('toastContent');
+      if (!banner || !content) return;
+
+      content.textContent = message;
+      banner.classList.remove('opacity-0', 'pointer-events-none');
+      banner.classList.add('opacity-100');
+
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        banner.classList.remove('opacity-100');
+        banner.classList.add('opacity-0', 'pointer-events-none');
+      }, 3200);
+    }
+
+    /**
+     * Fala um texto em inglês usando Web Speech API com fallback seguro.
+     */
+    function speakEnglish(text, rate = 0.95) {
+      try {
+        if (!('speechSynthesis' in window)) {
+          showToast('Síntese de voz não disponível neste navegador; use a transcrição/roteiro.');
+          return;
+        }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = rate;
+        window.speechSynthesis.speak(utterance);
+        showToast('Reproduzindo áudio em inglês...');
+      } catch (err) {
+        showToast('Não foi possível reproduzir o áudio agora.');
+      }
+    }
+
+    /**
+     * Alterna entre as abas/views principais e sincroniza o bloqueio do Tutor IA.
+     */
+    function setView(nextView) {
+      appState.view = nextView;
+
+      const viewsMap = {
+        home: document.getElementById('viewHome'),
+        listening: document.getElementById('viewListening'),
+        speaking: document.getElementById('viewSpeaking'),
+        reading: document.getElementById('viewReading'),
+        writing: document.getElementById('viewWriting'),
+        assessment: document.getElementById('viewAssessment'),
+        login: document.getElementById('viewLogin')
+      };
+
+      Object.entries(viewsMap).forEach(([key, el]) => {
+        if (el) el.classList.toggle('hidden', key !== nextView);
+      });
+
+      document.querySelectorAll('.nav-pill').forEach((btn) => {
+        const isActive = btn.dataset.view === nextView;
+        btn.className = isActive
+          ? 'nav-pill shrink-0 rounded-lg bg-rosebrand-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition focus:outline-none focus:ring-2 focus:ring-rosebrand-300 sm:text-sm'
+          : 'nav-pill shrink-0 rounded-lg px-3.5 py-2 text-xs font-semibold text-slate-600 transition hover:bg-rosebrand-100/80 hover:text-rosebrand-700 focus:outline-none focus:ring-2 focus:ring-rosebrand-300 dark:text-slate-300 dark:hover:bg-darksurface-800 dark:hover:text-rosebrand-200 sm:text-sm';
+      });
+
+      if (nextView === 'home') renderLessons();
+      if (nextView === 'listening') renderListeningTab();
+      if (nextView === 'speaking') renderSpeakingTab();
+      if (nextView === 'reading') renderReadingTab();
+      if (nextView === 'writing') renderWritingTab();
+      if (nextView === 'assessment') renderAssessment();
+
+      applyTextPreferences();
+      syncAiTutorLockState();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /**
+     * Atualiza status do usuário e estatísticas na tela inicial.
+     */
+    function renderUserAndStats() {
+      const badge = document.getElementById('sessionStatusBadge');
+      const completedEl = document.getElementById('completedCountLabel');
+      const levelEl = document.getElementById('estimatedLevelLabel');
+
+      if (badge) {
+        badge.textContent = appState.user
+          ? `Conta gratuita: ${appState.user.name} • Progresso salvo`
+          : 'Modo visitante • Progresso salvo localmente';
+      }
+      if (completedEl) {
+        completedEl.textContent = String(appState.completedLessons.length);
+      }
+      if (levelEl) {
+        levelEl.textContent = appState.estimatedLevel || 'Ainda não avaliado';
+      }
+    }
+
+    /**
+     * Atualiza o visual dos chips de filtro de trilha e habilidade.
+     */
+    function renderFilterChips() {
+      const trackChips = document.querySelectorAll('.track-chip');
+      trackChips.forEach((chip) => {
+        const active = chip.dataset.track === appState.track;
+        chip.className = active
+          ? 'track-chip min-h-[42px] rounded-full border border-rosebrand-400 bg-rosebrand-100 px-4 py-2 text-sm font-semibold text-rosebrand-700 shadow-2xs transition focus:outline-none focus:ring-2 focus:ring-rosebrand-200 dark:border-rosebrand-400/50 dark:bg-rosebrand-500/20 dark:text-rosebrand-200'
+          : 'track-chip min-h-[42px] rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-rosebrand-200 hover:bg-rosebrand-50/60 hover:text-rosebrand-700 focus:outline-none focus:ring-2 focus:ring-rosebrand-200 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-300 dark:hover:border-rosebrand-400/40 dark:hover:text-rosebrand-200';
+      });
+
+      const skillChips = document.querySelectorAll('.skill-chip');
+      skillChips.forEach((chip) => {
+        const active = chip.dataset.skill === appState.skill;
+        chip.className = active
+          ? 'skill-chip min-h-[40px] rounded-xl border border-rosebrand-300 bg-rosebrand-50 px-3.5 py-1.5 text-sm font-semibold text-rosebrand-700 transition focus:outline-none focus:ring-2 focus:ring-rosebrand-200 dark:border-rosebrand-400/40 dark:bg-rosebrand-500/15 dark:text-rosebrand-200'
+          : 'skill-chip min-h-[40px] rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-600 transition hover:border-rosebrand-200 hover:bg-rosebrand-50/50 hover:text-rosebrand-700 focus:outline-none focus:ring-2 focus:ring-rosebrand-200 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-300 dark:hover:border-rosebrand-400/40 dark:hover:text-rosebrand-200';
+      });
+    }
+
+    /**
+     * Renderiza os cards de lições filtradas na visão geral.
+     */
+    function renderLessons() {
+      renderFilterChips();
+
+      const grid = document.getElementById('lessonsGrid');
+      const heading = document.getElementById('lessonsHeading');
+      const summary = document.getElementById('activeFilterSummary');
+      if (!grid || !heading || !summary) return;
+
+      const filtered = LESSONS.filter((lesson) => {
+        const matchesTrack = appState.track === 'all' || lesson.track === appState.track;
+        const matchesSkill = appState.skill === 'all' || lesson.skill === appState.skill;
+        return matchesTrack && matchesSkill;
+      });
+
+      heading.textContent = `Lições disponíveis (${filtered.length})`;
+
+      const trackNames = {
+        all: 'Todas as trilhas',
+        everyday: 'Fluência do dia a dia',
+        'business-tech': 'Business & Tech/Dev',
+        travel: 'Viagem e turismo',
+        academic: 'Acadêmico, provas e proficiência'
+      };
+      const skillText = appState.skill === 'all' ? 'Todas as habilidades' : appState.skill;
+      summary.textContent = `${trackNames[appState.track]} • ${skillText}`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full rounded-2xl border border-rosebrand-200/70 bg-rosebrand-50/40 p-6 text-center dark:border-rosebrand-400/20 dark:bg-darksurface-900">
+            <p class="text-sm font-medium text-slate-700 dark:text-slate-200">Nenhuma lição encontrada com esses filtros.</p>
+            <button type="button" id="emptyResetBtn" class="mt-3 rounded-xl bg-rosebrand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rosebrand-700">
+              Mostrar todas as lições
+            </button>
+          </div>
+        `;
+        document.getElementById('emptyResetBtn')?.addEventListener('click', resetFilters);
+        return;
+      }
+
+      grid.innerHTML = filtered
+        .map((lesson) => {
+          const isDone = appState.completedLessons.includes(lesson.id);
+          const isPreferred = appState.settings.preferredCefr !== 'all' && lesson.level.includes(appState.settings.preferredCefr);
+          return `
+            <article class="flex flex-col justify-between rounded-2xl border ${
+              isPreferred
+                ? 'border-rosebrand-400 bg-rosebrand-50/35 dark:border-rosebrand-400/50 dark:bg-rosebrand-500/10'
+                : isDone
+                ? 'border-rosebrand-200 bg-rosebrand-50/20 dark:border-rosebrand-400/25 dark:bg-darksurface-900'
+                : 'border-slate-200 bg-white dark:border-darksurface-800 dark:bg-darksurface-900'
+            } p-5 shadow-2xs transition hover:border-rosebrand-300">
+              <div>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="rounded-full border border-rosebrand-200 bg-rosebrand-50 px-2.5 py-0.5 text-xs font-semibold text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-rosebrand-500/15 dark:text-rosebrand-200">
+                    ${escapeHtml(lesson.trackLabel)}
+                  </span>
+                  <span class="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-700 dark:bg-darksurface-800 dark:text-slate-200">
+                    ${escapeHtml(lesson.level)}
+                  </span>
+                </div>
+
+                <div class="mt-3 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <span class="font-semibold text-rosebrand-600 dark:text-rosebrand-300">${escapeHtml(lesson.skill)}</span>
+                  <span>•</span>
+                  <span>${escapeHtml(lesson.duration)}</span>
+                  ${isDone ? '<span class="ml-auto rounded-full bg-rosebrand-100 px-2 py-0.5 text-[11px] font-semibold text-rosebrand-700 dark:bg-rosebrand-500/20 dark:text-rosebrand-200">Concluída</span>' : ''}
+                </div>
+
+                <h3 class="mt-2 text-base font-bold leading-snug text-slate-900 dark:text-slate-100">
+                  ${escapeHtml(lesson.title)}
+                </h3>
+                <p class="mt-1.5 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                  ${escapeHtml(lesson.summary)}
+                </p>
+                <p class="mt-2.5 text-xs font-medium text-slate-500 dark:text-slate-400">
+                  Fonte: <span class="text-slate-700 dark:text-slate-200">${escapeHtml(lesson.source)}</span>
+                </p>
+              </div>
+
+              <div class="mt-4 flex items-center justify-between gap-2 border-t border-slate-100 pt-3.5 dark:border-darksurface-800">
+                <button
+                  type="button"
+                  data-ask-lesson="${escapeHtml(lesson.id)}"
+                  class="min-h-[38px] rounded-xl border border-rosebrand-200 bg-rosebrand-50/70 px-3 py-1.5 text-xs font-semibold text-rosebrand-700 transition hover:bg-rosebrand-100 dark:border-rosebrand-400/30 dark:bg-darksurface-800 dark:text-rosebrand-200"
+                >
+                  Dica com Tutor IA
+                </button>
+                <button
+                  type="button"
+                  data-toggle-done="${escapeHtml(lesson.id)}"
+                  class="min-h-[38px] rounded-xl border px-3 py-1.5 text-xs font-semibold transition ${
+                    isDone
+                      ? 'border-rosebrand-300 bg-rosebrand-600 text-white hover:bg-rosebrand-700'
+                      : 'border-slate-200 bg-white text-slate-700 hover:border-rosebrand-200 hover:bg-rosebrand-50/50 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-200'
+                  }"
+                >
+                  ${isDone ? 'Concluída ✓' : 'Marcar concluída'}
+                </button>
+              </div>
+            </article>
+          `;
+        })
+        .join('');
+    }
+
+    /**
+     * Renderiza a aba dedicada de LISTENING com áudio, transcrição, palavras-chave e 3 perguntas.
+     */
+    function renderListeningTab() {
+      const container = document.getElementById('listeningContainer');
+      if (!container) return;
+
+      container.innerHTML = LISTENING_MODULES.map((mod) => {
+        const done = appState.completedLessons.includes(mod.id);
+        return `
+          <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs dark:border-darksurface-800 dark:bg-darksurface-900">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="rounded-full border border-rosebrand-200 bg-rosebrand-50 px-3 py-0.5 text-xs font-semibold text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-rosebrand-500/15 dark:text-rosebrand-200">
+                ${escapeHtml(mod.source)}
+              </span>
+              <span class="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-bold text-slate-700 dark:bg-darksurface-800 dark:text-slate-200">
+                Nível ${escapeHtml(mod.level)}
+              </span>
+            </div>
+
+            <h2 class="mt-3 text-xl font-bold text-slate-900 dark:text-slate-100">${escapeHtml(mod.title)}</h2>
+
+            <div class="mt-4 flex flex-wrap items-center gap-2.5">
+              <button type="button" data-speak-text="${escapeHtml(mod.audioText)}" data-speak-rate="0.9" class="speak-btn min-h-[40px] rounded-xl bg-rosebrand-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rosebrand-700 sm:text-sm">
+                ▶ Ouvir áudio (0.9x)
+              </button>
+              <button type="button" data-speak-text="${escapeHtml(mod.audioText)}" data-speak-rate="1.0" class="speak-btn min-h-[40px] rounded-xl border border-rosebrand-200 bg-rosebrand-50 px-3.5 py-2 text-xs font-semibold text-rosebrand-700 hover:bg-rosebrand-100 dark:border-rosebrand-400/30 dark:bg-darksurface-800 dark:text-rosebrand-200 sm:text-sm">
+                ▶ Velocidade normal (1.0x)
+              </button>
+              <button type="button" data-target-transcript="tr-${escapeHtml(mod.id)}" class="toggle-transcript-btn min-h-[40px] rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-200 sm:text-sm">
+                Mostrar / ocultar transcrição
+              </button>
+              <button type="button" data-toggle-done="${escapeHtml(mod.id)}" class="ml-auto min-h-[40px] rounded-xl border px-3.5 py-2 text-xs font-semibold ${
+                done ? 'border-rosebrand-600 bg-rosebrand-600 text-white' : 'border-rosebrand-200 bg-rosebrand-50/70 text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-darksurface-800 dark:text-rosebrand-200'
+              }">
+                ${done ? 'Concluída ✓' : 'Marcar concluída'}
+              </button>
+            </div>
+
+            <div id="tr-${escapeHtml(mod.id)}" class="adaptive-prose mt-3 hidden rounded-xl border border-rosebrand-200/80 bg-rosebrand-50/50 p-4 text-sm text-slate-700 dark:border-rosebrand-400/20 dark:bg-darksurface-800 dark:text-slate-200">
+              <p class="mb-1 text-xs font-bold uppercase tracking-wider text-rosebrand-700 dark:text-rosebrand-300">Transcrição</p>
+              ${escapeHtml(mod.transcript)}
+            </div>
+
+            <!-- Palavras-chave -->
+            <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              ${mod.keywords
+                .map(
+                  (kw) => `
+                  <div class="rounded-xl border border-slate-200/90 bg-slate-50/70 p-3 dark:border-darksurface-800 dark:bg-darksurface-800/70">
+                    <p class="text-sm font-bold text-rosebrand-700 dark:text-rosebrand-300">${escapeHtml(kw.term)}</p>
+                    <p class="mt-0.5 text-xs text-slate-600 dark:text-slate-300">${escapeHtml(kw.meaning)}</p>
+                  </div>
+                `
+                )
+                .join('')}
+            </div>
+
+            <!-- 3 perguntas de compreensão -->
+            <div class="mt-5 space-y-4 border-t border-slate-100 pt-4 dark:border-darksurface-800">
+              <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Perguntas de compreensão</p>
+              ${mod.questions
+                .map(
+                  (item, qIdx) => `
+                  <div class="space-y-2 rounded-xl border border-slate-200/80 p-3.5 dark:border-darksurface-800">
+                    <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">${escapeHtml(item.q)}</p>
+                    <div class="flex flex-col gap-1.5">
+                      ${item.options
+                        .map(
+                          (opt, oIdx) => `
+                          <button type="button" data-check-answer="${oIdx === item.answer ? 'ok' : 'no'}" class="quiz-option-btn rounded-lg border border-slate-200 bg-white px-3 py-2 text-left text-xs font-medium text-slate-700 hover:border-rosebrand-300 hover:bg-rosebrand-50/50 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-200 sm:text-sm">
+                            ${escapeHtml(opt)}
+                          </button>
+                        `
+                        )
+                        .join('')}
+                    </div>
+                    <p class="quiz-feedback hidden text-xs font-semibold"></p>
+                  </div>
+                `
+                )
+                .join('')}
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      bindInteractivePracticeEvents(container);
+    }
+
+    /**
+     * Renderiza a aba dedicada de SPEAKING com roteiro, escuta, checklist e resposta do aluno.
+     */
+    function renderSpeakingTab() {
+      const container = document.getElementById('speakingContainer');
+      if (!container) return;
+
+      container.innerHTML = SPEAKING_MODULES.map((mod) => {
+        const done = appState.completedLessons.includes(mod.id);
+        return `
+          <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs dark:border-darksurface-800 dark:bg-darksurface-900">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="rounded-full border border-rosebrand-200 bg-rosebrand-50 px-3 py-0.5 text-xs font-semibold text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-rosebrand-500/15 dark:text-rosebrand-200">
+                ${escapeHtml(mod.track)} • ${escapeHtml(mod.level)}
+              </span>
+              <button type="button" data-toggle-done="${escapeHtml(mod.id)}" class="min-h-[38px] rounded-xl border px-3 py-1.5 text-xs font-semibold ${
+                done ? 'border-rosebrand-600 bg-rosebrand-600 text-white' : 'border-rosebrand-200 bg-rosebrand-50/70 text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-darksurface-800 dark:text-rosebrand-200'
+              }">
+                ${done ? 'Concluída ✓' : 'Marcar concluída'}
+              </button>
+            </div>
+
+            <h2 class="mt-3 text-xl font-bold text-slate-900 dark:text-slate-100">${escapeHtml(mod.title)}</h2>
+            <p class="mt-1.5 text-sm text-slate-600 dark:text-slate-300">${escapeHtml(mod.scenario)}</p>
+
+            <div class="mt-4 rounded-xl border border-rosebrand-200/80 bg-rosebrand-50/50 p-4 dark:border-rosebrand-400/20 dark:bg-darksurface-800">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-rosebrand-700 dark:text-rosebrand-300">Exemplo modelo para shadowing</span>
+                <button type="button" data-speak-text="${escapeHtml(mod.modelPhrase)}" data-speak-rate="0.92" class="speak-btn rounded-lg bg-rosebrand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rosebrand-700">
+                  ▶ Ouvir modelo
+                </button>
+              </div>
+              <p class="adaptive-prose mt-2 text-sm text-slate-800 dark:text-slate-100">"${escapeHtml(mod.modelPhrase)}"</p>
+            </div>
+
+            ${
+              appState.settings.pronunciationHints
+                ? `
+              <div class="mt-4 rounded-xl border border-slate-200/90 p-4 dark:border-darksurface-800">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Checklist de fala, entonação e connected speech</p>
+                <ul class="mt-2 space-y-2 text-xs text-slate-700 dark:text-slate-300 sm:text-sm">
+                  ${mod.checklist
+                    .map(
+                      (c) => `
+                      <li class="flex items-start gap-2">
+                        <input type="checkbox" class="mt-0.5 h-4 w-4 rounded accent-rosebrand-600" />
+                        <span>${escapeHtml(c)}</span>
+                      </li>
+                    `
+                    )
+                    .join('')}
+                </ul>
+              </div>
+            `
+                : ''
+            }
+
+            <div class="mt-4 space-y-2.5">
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Roteiro ou transcrição da sua fala em inglês
+              </label>
+              <textarea rows="3" placeholder="Escreva ou revise aqui o que você falou em voz alta..." class="speaking-draft w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-900 focus:border-rosebrand-400 focus:outline-none focus:ring-2 focus:ring-rosebrand-200 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-100"></textarea>
+              <button type="button" class="speaking-eval-btn min-h-[40px] rounded-xl bg-rosebrand-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rosebrand-700 sm:text-sm">
+                Gerar feedback de expressão oral
+              </button>
+              <p class="speaking-feedback hidden rounded-xl border border-rosebrand-200 bg-rosebrand-50/60 p-3 text-xs font-medium text-rosebrand-700 dark:border-rosebrand-400/25 dark:bg-darksurface-800 dark:text-rosebrand-200 sm:text-sm"></p>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      bindInteractivePracticeEvents(container);
+    }
+
+    /**
+     * Renderiza a aba dedicada de READING com texto, vocabulário/collocations e questões.
+     */
+    function renderReadingTab() {
+      const container = document.getElementById('readingContainer');
+      if (!container) return;
+
+      container.innerHTML = READING_MODULES.map((mod) => {
+        const done = appState.completedLessons.includes(mod.id);
+        return `
+          <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs dark:border-darksurface-800 dark:bg-darksurface-900">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="rounded-full border border-rosebrand-200 bg-rosebrand-50 px-3 py-0.5 text-xs font-semibold text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-rosebrand-500/15 dark:text-rosebrand-200">
+                ${escapeHtml(mod.source)} • ${escapeHtml(mod.level)}
+              </span>
+              <button type="button" data-toggle-done="${escapeHtml(mod.id)}" class="min-h-[38px] rounded-xl border px-3 py-1.5 text-xs font-semibold ${
+                done ? 'border-rosebrand-600 bg-rosebrand-600 text-white' : 'border-rosebrand-200 bg-rosebrand-50/70 text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-darksurface-800 dark:text-rosebrand-200'
+              }">
+                ${done ? 'Concluída ✓' : 'Marcar concluída'}
+              </button>
+            </div>
+
+            <h2 class="mt-3 text-xl font-bold text-slate-900 dark:text-slate-100">${escapeHtml(mod.title)}</h2>
+            <p class="adaptive-prose mt-3 rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 text-sm text-slate-800 dark:border-darksurface-800 dark:bg-darksurface-800/70 dark:text-slate-100">
+              ${escapeHtml(mod.passage)}
+            </p>
+
+            <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              ${mod.vocab
+                .map(
+                  (v) => `
+                  <div class="rounded-xl border border-rosebrand-200/70 bg-rosebrand-50/40 p-3 dark:border-rosebrand-400/20 dark:bg-darksurface-800">
+                    <p class="text-sm font-bold text-rosebrand-700 dark:text-rosebrand-300">${escapeHtml(v.word)}</p>
+                    <p class="mt-0.5 text-xs text-slate-600 dark:text-slate-300">${escapeHtml(v.note)}</p>
+                  </div>
+                `
+                )
+                .join('')}
+            </div>
+
+            <div class="mt-5 space-y-4 border-t border-slate-100 pt-4 dark:border-darksurface-800">
+              ${mod.questions
+                .map(
+                  (item) => `
+                  <div class="space-y-2 rounded-xl border border-slate-200/80 p-3.5 dark:border-darksurface-800">
+                    <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">${escapeHtml(item.q)}</p>
+                    <div class="flex flex-col gap-1.5">
+                      ${item.options
+                        .map(
+                          (opt, oIdx) => `
+                          <button type="button" data-check-answer="${oIdx === item.answer ? 'ok' : 'no'}" class="quiz-option-btn rounded-lg border border-slate-200 bg-white px-3 py-2 text-left text-xs font-medium text-slate-700 hover:border-rosebrand-300 hover:bg-rosebrand-50/50 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-200 sm:text-sm">
+                            ${escapeHtml(opt)}
+                          </button>
+                        `
+                        )
+                        .join('')}
+                    </div>
+                    <p class="quiz-feedback hidden text-xs font-semibold"></p>
+                  </div>
+                `
+                )
+                .join('')}
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      bindInteractivePracticeEvents(container);
+    }
+
+    /**
+     * Renderiza a aba dedicada de WRITING com prompt, contador de palavras e feedback estruturado.
+     */
+    function renderWritingTab() {
+      const container = document.getElementById('writingContainer');
+      if (!container) return;
+
+      container.innerHTML = WRITING_MODULES.map((mod) => {
+        const done = appState.completedLessons.includes(mod.id);
+        return `
+          <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-2xs dark:border-darksurface-800 dark:bg-darksurface-900">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="rounded-full border border-rosebrand-200 bg-rosebrand-50 px-3 py-0.5 text-xs font-semibold text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-rosebrand-500/15 dark:text-rosebrand-200">
+                ${escapeHtml(mod.track)} • ${escapeHtml(mod.level)}
+              </span>
+              <button type="button" data-toggle-done="${escapeHtml(mod.id)}" class="min-h-[38px] rounded-xl border px-3 py-1.5 text-xs font-semibold ${
+                done ? 'border-rosebrand-600 bg-rosebrand-600 text-white' : 'border-rosebrand-200 bg-rosebrand-50/70 text-rosebrand-700 dark:border-rosebrand-400/30 dark:bg-darksurface-800 dark:text-rosebrand-200'
+              }">
+                ${done ? 'Concluída ✓' : 'Marcar concluída'}
+              </button>
+            </div>
+
+            <h2 class="mt-3 text-xl font-bold text-slate-900 dark:text-slate-100">${escapeHtml(mod.title)}</h2>
+            <p class="mt-1.5 text-sm text-slate-600 dark:text-slate-300">${escapeHtml(mod.prompt)}</p>
+
+            <div class="mt-3 flex flex-wrap items-center gap-1.5">
+              <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Expressões de apoio:</span>
+              ${mod.helpfulPhrases
+                .map((p) => `<span class="rounded-full bg-rosebrand-50 px-2.5 py-0.5 text-xs font-medium text-rosebrand-700 dark:bg-rosebrand-500/15 dark:text-rosebrand-200">${escapeHtml(p)}</span>`)
+                .join('')}
+            </div>
+
+            <div class="mt-4 space-y-3">
+              <textarea data-min-words="${mod.minWords}" rows="5" placeholder="Escreva seu rascunho em inglês aqui..." class="writing-textarea adaptive-prose w-full rounded-xl border border-slate-300 bg-white p-3.5 text-sm text-slate-900 focus:border-rosebrand-400 focus:outline-none focus:ring-2 focus:ring-rosebrand-200 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-100"></textarea>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="writing-word-count text-xs font-medium text-slate-500 dark:text-slate-400">0 palavras (meta mínima: ${mod.minWords})</span>
+                <button type="button" class="writing-review-btn min-h-[40px] rounded-xl bg-rosebrand-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rosebrand-700 sm:text-sm">
+                  Avaliar clareza, estrutura e vocabulário
+                </button>
+              </div>
+              <div class="writing-feedback hidden rounded-xl border border-rosebrand-200 bg-rosebrand-50/55 p-4 text-xs text-slate-700 dark:border-rosebrand-400/25 dark:bg-darksurface-800 dark:text-slate-200 sm:text-sm"></div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      bindInteractivePracticeEvents(container);
+    }
+
+    /**
+     * Associa eventos de áudio, questões, fala e escrita dentro das abas de trilha.
+     */
+    function bindInteractivePracticeEvents(container) {
+      container.querySelectorAll('.speak-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          speakEnglish(btn.dataset.speakText || '', Number(btn.dataset.speakRate || 0.95));
+        });
+      });
+
+      container.querySelectorAll('.toggle-transcript-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const target = document.getElementById(btn.dataset.targetTranscript || '');
+          target?.classList.toggle('hidden');
+          applyTextPreferences();
+        });
+      });
+
+      container.querySelectorAll('[data-toggle-done]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          toggleLessonDone(btn.dataset.toggleDone);
+          if (appState.view === 'listening') renderListeningTab();
+          if (appState.view === 'speaking') renderSpeakingTab();
+          if (appState.view === 'reading') renderReadingTab();
+          if (appState.view === 'writing') renderWritingTab();
+        });
+      });
+
+      container.querySelectorAll('.quiz-option-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const box = btn.parentElement?.parentElement;
+          const feedback = box?.querySelector('.quiz-feedback');
+          const isOk = btn.dataset.checkAnswer === 'ok';
+          if (feedback) {
+            feedback.classList.remove('hidden');
+            feedback.textContent = isOk
+              ? 'Correto! Boa leitura/compreensão do contexto.'
+              : 'Ainda não: releia o trecho-chave e tente outra alternativa.';
+            feedback.className = isOk
+              ? 'quiz-feedback text-xs font-semibold text-emerald-700 dark:text-emerald-300'
+              : 'quiz-feedback text-xs font-semibold text-rosebrand-700 dark:text-rosebrand-300';
+          }
+        });
+      });
+
+      container.querySelectorAll('.speaking-eval-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const parent = btn.parentElement;
+          const draft = parent?.querySelector('.speaking-draft')?.value.trim() || '';
+          const fb = parent?.querySelector('.speaking-feedback');
+          if (!fb) return;
+          fb.classList.remove('hidden');
+          if (draft.length < 10) {
+            fb.textContent = 'Escreva pelo menos uma frase em inglês no roteiro para receber um retorno de estrutura e clareza.';
+            return;
+          }
+          const words = draft.split(/\s+/).filter(Boolean).length;
+          fb.textContent = `Feedback automático (${words} palavras): boa iniciativa! Verifique se há verbo principal claro, pontuação final e conectores naturais (like "because", "so" ou "maybe") para conectar suas ideias.`;
+        });
+      });
+
+      container.querySelectorAll('.writing-textarea').forEach((ta) => {
+        ta.addEventListener('input', () => {
+          const words = ta.value.trim() ? ta.value.trim().split(/\s+/).length : 0;
+          const minW = Number(ta.dataset.minWords || 20);
+          const counter = ta.parentElement?.querySelector('.writing-word-count');
+          if (counter) {
+            counter.textContent = `${words} ${words === 1 ? 'palavra' : 'palavras'} (meta mínima: ${minW})`;
+          }
+        });
+      });
+
+      container.querySelectorAll('.writing-review-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const box = btn.parentElement;
+          const ta = box?.querySelector('.writing-textarea');
+          const fb = box?.querySelector('.writing-feedback');
+          if (!ta || !fb) return;
+
+          const text = ta.value.trim();
+          const words = text ? text.split(/\s+/).length : 0;
+          const minW = Number(ta.dataset.minWords || 20);
+          const hasConnector = /\b(because|however|therefore|although|so|also|first|finally)\b/i.test(text);
+          const startsCapital = /^[A-Z]/.test(text);
+
+          fb.classList.remove('hidden');
+          if (words === 0) {
+            fb.innerHTML = '<p class="font-semibold text-rosebrand-700 dark:text-rosebrand-300">Escreva um rascunho antes de avaliar.</p>';
+            return;
+          }
+
+          fb.innerHTML = `
+            <p class="font-bold text-rosebrand-700 dark:text-rosebrand-300">Critérios de escrita (Clareza, Estrutura/Coesão e Vocabulário)</p>
+            <ul class="mt-2 list-disc space-y-1 pl-5">
+              <li><strong>Clareza e extensão:</strong> ${words >= minW ? `Bom volume (${words} palavras), atingindo a meta de ${minW}+ palavras.` : `Você escreveu ${words} palavras; tente expandir até ${minW}+ palavras com mais detalhes.`}</li>
+              <li><strong>Estrutura e coesão:</strong> ${startsCapital ? 'Início com letra maiúscula ok. ' : 'Lembre-se de iniciar a frase com letra maiúscula. '}${hasConnector ? 'Conectores de coesão identificados.' : 'Experimente usar conectores como "because", "however" ou "therefore" para ligar as frases.'}</li>
+              <li><strong>Vocabulário:</strong> releia em voz alta para confirmar se os termos escolhidos expressam exatamente o que você quis dizer.</li>
+            </ul>
+          `;
+        });
+      });
+    }
+
+    /**
+     * Reseta os filtros de trilha e habilidade.
+     */
+    function resetFilters() {
+      appState.track = 'all';
+      appState.skill = 'all';
+      renderLessons();
+    }
+
+    /**
+     * Alterna conclusão da lição e salva localmente.
+     */
+    function toggleLessonDone(lessonId) {
+      const idx = appState.completedLessons.indexOf(lessonId);
+      if (idx >= 0) {
+        appState.completedLessons.splice(idx, 1);
+        showToast('Lição removida das concluídas.');
+      } else {
+        appState.completedLessons.push(lessonId);
+        showToast('Progresso salvo! Lição marcada como concluída.');
+      }
+      persistState();
+      renderUserAndStats();
+      if (appState.view === 'home') renderLessons();
+    }
+
+    /**
+     * Renderiza o Teste de Proficiência CEFR.
+     */
+    function renderAssessment() {
+      const container = document.getElementById('assessmentContainer');
+      if (!container) return;
+
+      if (appState.assessmentFinished) {
+        const correctCount = ASSESSMENT_QUESTIONS.reduce((acc, q, i) => {
+          return acc + (appState.assessmentAnswers[i] === q.correctIndex ? 1 : 0);
+        }, 0);
+
+        let level = 'A1–A2 (Básico)';
+        let recommendation = 'Comece pela trilha "Fluência do dia a dia" e "Viagem e turismo" em Listening e Speaking.';
+        if (correctCount === 2) {
+          level = 'B1 (Intermediário)';
+          recommendation = 'Ótima base! Combine "Fluência do dia a dia" com "Business & Tech/Dev" para ganhar confiança.';
+        } else if (correctCount === 3) {
+          level = 'B2 (Intermediário-Avançado)';
+          recommendation = 'Você já compreende estruturas mais elaboradas. Explore "Acadêmico, provas e proficiência" e "Business & Tech/Dev".';
+        } else if (correctCount >= 4) {
+          level = 'C1 (Avançado)';
+          recommendation = 'Excelente domínio! Foque em leitura crítica, argumentação escrita e nuances acadêmicas.';
+        }
+
+        appState.estimatedLevel = level;
+        persistState();
+        renderUserAndStats();
+
+        container.innerHTML = `
+          <div class="rounded-2xl border border-rosebrand-200 bg-rosebrand-50/50 p-6 dark:border-rosebrand-400/25 dark:bg-darksurface-800">
+            <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-rosebrand-700 ring-1 ring-rosebrand-200 dark:bg-darksurface-900 dark:text-rosebrand-200 dark:ring-rosebrand-400/30">
+              Resultado do diagnóstico
+            </span>
+            <h2 class="mt-3 text-2xl font-bold text-slate-900 dark:text-slate-100">Nível estimado: ${escapeHtml(level)}</h2>
+            <p class="mt-1.5 text-sm text-slate-600 dark:text-slate-300">
+              Você acertou <strong class="font-semibold text-slate-900 dark:text-slate-100">${correctCount} de ${ASSESSMENT_QUESTIONS.length}</strong> questões.
+            </p>
+            <p class="mt-3 text-sm leading-relaxed text-slate-700 dark:text-slate-200">${escapeHtml(recommendation)}</p>
+            <div class="mt-5 flex flex-wrap gap-3">
+              <button type="button" id="finishAssessmentToTracksBtn" class="min-h-[42px] rounded-xl bg-rosebrand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rosebrand-700">
+                Ir para as trilhas recomendadas
+              </button>
+              <button type="button" id="retakeAssessmentBtn" class="min-h-[42px] rounded-xl border border-rosebrand-200 bg-white px-4 py-2 text-sm font-semibold text-rosebrand-700 hover:bg-rosebrand-50 dark:border-rosebrand-400/30 dark:bg-darksurface-900 dark:text-rosebrand-200">
+                Refazer teste
+              </button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('finishAssessmentToTracksBtn')?.addEventListener('click', () => setView('home'));
+        document.getElementById('retakeAssessmentBtn')?.addEventListener('click', () => {
+          appState.assessmentStep = 0;
+          appState.assessmentAnswers = [];
+          appState.assessmentFinished = false;
+          renderAssessment();
+        });
+        return;
+      }
+
+      const step = appState.assessmentStep;
+      const question = ASSESSMENT_QUESTIONS[step];
+      const selected = appState.assessmentAnswers[step];
+
+      container.innerHTML = `
+        <div class="space-y-4">
+          <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <span>Questão ${step + 1} de ${ASSESSMENT_QUESTIONS.length}</span>
+            <span class="rounded-md bg-rosebrand-50 px-2 py-0.5 text-rosebrand-700 dark:bg-rosebrand-500/15 dark:text-rosebrand-200">Faixa ${escapeHtml(question.cefr)}</span>
+          </div>
+          <div class="h-2 w-full overflow-hidden rounded-full bg-rosebrand-100 dark:bg-darksurface-800">
+            <div class="h-full rounded-full bg-rosebrand-500 transition-all" style="width: ${Math.round(((step + 1) / ASSESSMENT_QUESTIONS.length) * 100)}%"></div>
+          </div>
+
+          <h2 class="pt-1 text-lg font-bold text-slate-900 dark:text-slate-100">${escapeHtml(question.prompt)}</h2>
+
+          <div class="space-y-2.5">
+            ${question.options
+              .map((opt, idx) => {
+                const isPicked = selected === idx;
+                return `
+                  <button
+                    type="button"
+                    data-option-index="${idx}"
+                    class="assessment-opt flex min-h-[46px] w-full items-center justify-between rounded-xl border px-4 py-2.5 text-left text-sm font-medium transition ${
+                      isPicked
+                        ? 'border-rosebrand-500 bg-rosebrand-50 text-rosebrand-700 ring-1 ring-rosebrand-300 dark:border-rosebrand-400 dark:bg-rosebrand-500/20 dark:text-rosebrand-200'
+                        : 'border-slate-200 bg-white text-slate-700 hover:border-rosebrand-200 hover:bg-rosebrand-50/40 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-200'
+                    }"
+                  >
+                    <span>${escapeHtml(opt)}</span>
+                    <span class="ml-2 text-xs font-bold">${isPicked ? '●' : '○'}</span>
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+
+          <div class="flex items-center justify-between pt-3">
+            <button
+              type="button"
+              id="prevQuestionBtn"
+              ${step === 0 ? 'disabled' : ''}
+              class="min-h-[42px] rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-darksurface-700 dark:bg-darksurface-800 dark:text-slate-200"
+            >
+              Anterior
+            </button>
+            <button
+              type="button"
+              id="nextQuestionBtn"
+              ${typeof selected !== 'number' ? 'disabled' : ''}
+              class="min-h-[42px] rounded-xl bg-rosebrand-600 px-5 py-2 text-sm font-semibold text-white hover:bg-rosebrand-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-darksurface-700"
+            >
+              ${step === ASSESSMENT_QUESTIONS.length - 1 ? 'Concluir teste' : 'Próxima'}
+            </button>
+          </div>
+        </div>
+      `;
+
+      container.querySelectorAll('.assessment-opt').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          appState.assessmentAnswers[step] = Number(btn.dataset.optionIndex);
+          renderAssessment();
+        });
+      });
+
+      document.getElementById('prevQuestionBtn')?.addEventListener('click', () => {
+        if (appState.assessmentStep > 0) {
+          appState.assessmentStep -= 1;
+          renderAssessment();
+        }
+      });
+
+      document.getElementById('nextQuestionBtn')?.addEventListener('click', () => {
+        if (typeof appState.assessmentAnswers[step] !== 'number') return;
+        if (step < ASSESSMENT_QUESTIONS.length - 1) {
+          appState.assessmentStep += 1;
+          renderAssessment();
+        } else {
+          appState.assessmentFinished = true;
+          renderAssessment();
+        }
+      });
+    }
+
+    /**
+     * Abre e popula o modal de Configurações com os dados salvos.
+     */
+    function openSettingsModal() {
+      const modal = document.getElementById('settingsModal');
+      if (!modal) return;
+
+      const cefrSelect = document.getElementById('prefCefrSelect');
+      const comfortableCb = document.getElementById('prefComfortableText');
+      const pronCb = document.getElementById('prefPronunciationHints');
+      const accSummary = document.getElementById('settingsAccountSummary');
+      const storageStats = document.getElementById('settingsStorageStats');
+
+      if (cefrSelect) cefrSelect.value = appState.settings.preferredCefr;
+      if (comfortableCb) comfortableCb.checked = Boolean(appState.settings.comfortableText);
+      if (pronCb) pronCb.checked = appState.settings.pronunciationHints !== false;
+      if (accSummary) {
+        accSummary.textContent = appState.user
+          ? `Conta: ${appState.user.name} (${appState.user.email})`
+          : 'Conta: Modo Visitante (local)';
+      }
+      if (storageStats) {
+        storageStats.textContent = `${appState.completedLessons.length} lições concluídas • Nível: ${appState.estimatedLevel || 'não avaliado'}`;
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeSettingsModal() {
+      const modal = document.getElementById('settingsModal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    /**
+     * Sincroniza o estado do Tutor IA: bloqueado automaticamente quando view === 'assessment'.
+     */
+    function syncAiTutorLockState() {
+      const isBlocked = appState.view === 'assessment';
+      const blockedBanner = document.getElementById('aiBlockedBanner');
+      const quickPrompts = document.getElementById('aiQuickPrompts');
+      const chatInput = document.getElementById('aiChatInput');
+      const sendBtn = document.getElementById('aiSendBtn');
+      const statusDot = document.getElementById('aiStatusDot');
+      const modeSubtitle = document.getElementById('aiModeSubtitle');
+      const fabBtn = document.getElementById('aiFabBtn');
+      const fabLabel = document.getElementById('aiFabLabel');
+      const fabIcon = document.getElementById('aiFabIcon');
+
+      if (blockedBanner) blockedBanner.classList.toggle('hidden', !isBlocked);
+      if (quickPrompts) {
+        quickPrompts.querySelectorAll('button').forEach((b) => {
+          b.disabled = isBlocked;
+          b.classList.toggle('opacity-40', isBlocked);
+          b.classList.toggle('cursor-not-allowed', isBlocked);
+        });
+      }
+      if (chatInput) {
+        chatInput.disabled = isBlocked;
+        chatInput.placeholder = isBlocked
+          ? 'Bloqueado durante o teste...'
+          : 'Ex.: O que significa maybe nesse contexto?';
+      }
+      if (sendBtn) sendBtn.disabled = isBlocked;
+
+      if (statusDot) {
+        statusDot.className = isBlocked
+          ? 'h-2.5 w-2.5 rounded-full bg-rosebrand-500'
+          : 'h-2.5 w-2.5 rounded-full bg-emerald-500';
+      }
+      if (modeSubtitle) {
+        modeSubtitle.textContent = isBlocked
+          ? 'Bloqueado durante o Teste de Proficiência'
+          : 'Traduções contextuais e dicas nas lições';
+      }
+      if (fabBtn) {
+        fabBtn.className = isBlocked
+          ? 'inline-flex min-h-[48px] items-center gap-2.5 rounded-full border border-rosebrand-300 bg-rosebrand-100 px-4 py-2.5 text-sm font-semibold text-rosebrand-700 shadow-md transition hover:bg-rosebrand-200 focus:outline-none focus:ring-2 focus:ring-rosebrand-300 dark:border-rosebrand-400/40 dark:bg-darksurface-800 dark:text-rosebrand-200'
+          : 'inline-flex min-h-[48px] items-center gap-2.5 rounded-full border border-rosebrand-300 bg-rosebrand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:bg-rosebrand-700 focus:outline-none focus:ring-2 focus:ring-rosebrand-300';
+      }
+      if (fabIcon) fabIcon.textContent = isBlocked ? '🔒' : '💬';
+      if (fabLabel) fabLabel.textContent = isBlocked ? 'Tutor IA (Bloqueado no teste)' : 'Tutor IA';
+    }
+
+    /**
+     * Gera resposta contextual do Tutor IA apenas quando fora do teste.
+     */
+    function buildTutorReply(question) {
+      if (appState.view === 'assessment') {
+        return 'O Tutor IA está bloqueado durante o Teste de Proficiência. Volte para uma aba de trilha para receber traduções e dicas.';
+      }
+
+      const lower = question.toLowerCase();
+      if (lower.includes('maybe')) {
+        return 'Neste contexto, "maybe" significa "talvez" ou "quem sabe". Em conversas do dia a dia, indica possibilidade ou sugestão sem compromisso firme; em e-mails ou textos mais formais, "perhaps" ou "possibly" costumam soar mais neutros.';
+      }
+      if (lower.includes('traduz') || lower.includes('significa')) {
+        return 'Para entender com precisão, observe o sujeito e o verbo da frase inteira antes de traduzir palavra por palavra. Se quiser, cole aqui a frase em inglês e diga em qual trilha você está.';
+      }
+      return 'Dica rápida: leia a frase ou parágrafo inteiro primeiro, identifique a ideia central e só depois busque o significado exato de termos desconhecidos.';
+    }
+
+    /**
+     * Adiciona mensagem ao histórico visual do Tutor IA.
+     */
+    function appendAiMessage(text, sender = 'bot') {
+      const list = document.getElementById('aiMessagesList');
+      if (!list) return;
+
+      const bubble = document.createElement('div');
+      bubble.className =
+        sender === 'user'
+          ? 'ml-auto max-w-[85%] rounded-xl bg-rosebrand-600 px-3.5 py-2.5 text-white'
+          : 'mr-auto max-w-[92%] rounded-xl border border-rosebrand-100 bg-rosebrand-50/60 px-3.5 py-2.5 text-slate-700 dark:border-rosebrand-400/20 dark:bg-darksurface-800 dark:text-slate-200';
+      bubble.textContent = text;
+      list.appendChild(bubble);
+      list.scrollTop = list.scrollHeight;
+    }
+
+    /**
+     * Escapa caracteres HTML básicos para evitar injeção em strings dinâmicas.
+     */
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    /**
+     * Inicializa eventos da interface.
+     */
+    function bindEvents() {
+      // Alternar modo claro / escuro
+      document.getElementById('themeToggleBtn')?.addEventListener('click', () => {
+        appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
+        applyTheme();
+        persistState();
+        showToast(appState.theme === 'dark' ? 'Modo escuro ativado.' : 'Modo claro ativado.');
+      });
+
+      // Modal de Configurações
+      document.getElementById('openSettingsBtn')?.addEventListener('click', openSettingsModal);
+      document.getElementById('closeSettingsBtn')?.addEventListener('click', closeSettingsModal);
+      document.getElementById('settingsModal')?.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeSettingsModal();
+      });
+
+      document.getElementById('saveSettingsBtn')?.addEventListener('click', () => {
+        const cefrSelect = document.getElementById('prefCefrSelect');
+        const comfortableCb = document.getElementById('prefComfortableText');
+        const pronCb = document.getElementById('prefPronunciationHints');
+
+        appState.settings.preferredCefr = cefrSelect ? cefrSelect.value : 'all';
+        appState.settings.comfortableText = Boolean(comfortableCb?.checked);
+        appState.settings.pronunciationHints = Boolean(pronCb?.checked);
+
+        persistState();
+        applyTextPreferences();
+        closeSettingsModal();
+        setView(appState.view);
+        showToast('Configurações salvas!');
+      });
+
+      document.getElementById('exportProgressBtn')?.addEventListener('click', () => {
+        const payload = JSON.stringify(
+          {
+            exportedAt: new Date().toISOString(),
+            user: appState.user,
+            completedLessons: appState.completedLessons,
+            estimatedLevel: appState.estimatedLevel,
+            settings: appState.settings
+          },
+          null,
+          2
+        );
+        const blob = new Blob([payload], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'fluencia-livre-progresso.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Progresso exportado em JSON.');
+      });
+
+      document.getElementById('resetProgressBtn')?.addEventListener('click', () => {
+        appState.completedLessons = [];
+        appState.estimatedLevel = null;
+        appState.assessmentStep = 0;
+        appState.assessmentAnswers = [];
+        appState.assessmentFinished = false;
+        persistState();
+        renderUserAndStats();
+        openSettingsModal();
+        if (appState.view === 'home') renderLessons();
+        showToast('Progresso local limpo.');
+      });
+
+      // Navegação por abas
+      document.querySelectorAll('.nav-pill').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (btn.dataset.view) setView(btn.dataset.view);
+        });
+      });
+
+      document.getElementById('goToAssessmentFromHome')?.addEventListener('click', () => setView('assessment'));
+      document.getElementById('backToTracksFromTest')?.addEventListener('click', () => setView('home'));
+
+      // Filtros de trilha e habilidade
+      document.getElementById('trackFilterGroup')?.addEventListener('click', (e) => {
+        const chip = e.target.closest('.track-chip');
+        if (!chip || !chip.dataset.track) return;
+        appState.track = chip.dataset.track;
+        renderLessons();
+      });
+
+      document.getElementById('skillFilterGroup')?.addEventListener('click', (e) => {
+        const chip = e.target.closest('.skill-chip');
+        if (!chip || !chip.dataset.skill) return;
+        appState.skill = chip.dataset.skill;
+        renderLessons();
+      });
+
+      document.getElementById('resetFiltersBtn')?.addEventListener('click', resetFilters);
+
+      // Ações dentro dos cards de lição da visão geral
+      document.getElementById('lessonsGrid')?.addEventListener('click', (e) => {
+        const askBtn = e.target.closest('[data-ask-lesson]');
+        if (askBtn) {
+          const lesson = LESSONS.find((l) => l.id === askBtn.dataset.askLesson);
+          const panel = document.getElementById('aiChatPanel');
+          appState.aiOpen = true;
+          panel?.classList.remove('hidden');
+          syncAiTutorLockState();
+          if (appState.view === 'assessment') {
+            appendAiMessage(buildTutorReply(''), 'bot');
+            return;
+          }
+          if (lesson) {
+            appendAiMessage(`Dica para "${lesson.title}" (${lesson.skill}): ${lesson.tip}`, 'bot');
+          }
+          return;
+        }
+
+        const doneBtn = e.target.closest('[data-toggle-done]');
+        if (doneBtn && doneBtn.dataset.toggleDone) {
+          toggleLessonDone(doneBtn.dataset.toggleDone);
+        }
+      });
+
+      // Formulário de Login / Conta gratuita
+      document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('studentName')?.value.trim() || '';
+        const email = document.getElementById('studentEmail')?.value.trim() || '';
+        if (!name || !email) return;
+
+        appState.user = { name, email };
+        persistState();
+        renderUserAndStats();
+        showToast(`Bem-vindo(a), ${name}! Seu progresso gratuito está salvo.`);
+        setView('home');
+      });
+
+      document.getElementById('continueGuestBtn')?.addEventListener('click', () => {
+        appState.user = null;
+        persistState();
+        renderUserAndStats();
+        showToast('Continuando no modo visitante gratuito.');
+        setView('home');
+      });
+
+      // Controles do Tutor IA flutuante
+      const aiFabBtn = document.getElementById('aiFabBtn');
+      const aiChatPanel = document.getElementById('aiChatPanel');
+      const closeAiPanelBtn = document.getElementById('closeAiPanelBtn');
+
+      aiFabBtn?.addEventListener('click', () => {
+        appState.aiOpen = !appState.aiOpen;
+        aiChatPanel?.classList.toggle('hidden', !appState.aiOpen);
+        syncAiTutorLockState();
+      });
+
+      closeAiPanelBtn?.addEventListener('click', () => {
+        appState.aiOpen = false;
+        aiChatPanel?.classList.add('hidden');
+      });
+
+      document.querySelectorAll('.ai-quick-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (appState.view === 'assessment') {
+            appendAiMessage(buildTutorReply(''), 'bot');
+            return;
+          }
+          const prompt = btn.dataset.prompt || '';
+          if (!prompt) return;
+          appendAiMessage(prompt, 'user');
+          appendAiMessage(buildTutorReply(prompt), 'bot');
+        });
+      });
+
+      document.getElementById('aiChatForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (appState.view === 'assessment') {
+          appendAiMessage(buildTutorReply(''), 'bot');
+          return;
+        }
+        const input = document.getElementById('aiChatInput');
+        if (!input) return;
+        const text = input.value.trim();
+        if (!text) return;
+
+        appendAiMessage(text, 'user');
+        appendAiMessage(buildTutorReply(text), 'bot');
+        input.value = '';
+      });
+    }
+
+    // Inicialização da aplicação
+    loadSavedState();
+    applyTheme();
+    bindEvents();
+    renderUserAndStats();
+    setView('home');
+  </script>
+</body>
+</html>
